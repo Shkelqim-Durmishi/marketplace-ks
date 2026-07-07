@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String                   @id
+  name            String
+  email           String                   @unique
+  phone           String?
+  role            Role                     @default(BUYER)
+  passwordHash    String                   @map("password_hash")
+  emailVerifiedAt DateTime?                @map("email_verified_at")
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+  listings        Listing[]
+  resetTokens     PasswordResetToken[]
+  verifyTokens    EmailVerificationToken[]
+  buyerChats      Conversation[]           @relation("BuyerConversations")
+  sellerChats     Conversation[]           @relation("SellerConversations")
+  messages        Message[]
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String    @id
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        String    @id
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("email_verification_tokens")
+}
+
+model Listing {
+  id           String          @id
+  sellerId     String          @map("seller_id")
+  title        String
+  category     String
+  price        Int
+  location     String
+  year         Int
+  transmission String?
+  image        String?
+  galleryJson  String          @default("[]") @map("gallery_json")
+  specsJson    String          @default("{}") @map("specs_json")
+  description  String
+  status       ListingStatus   @default(ACTIVE)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  seller       User            @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+
+  @@index([sellerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("listings")
+}
+
+model Conversation {
+  id         String    @id
+  listingId  String    @map("listing_id")
+  buyerId    String    @map("buyer_id")
+  sellerId   String    @map("seller_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  listing    Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyer      User      @relation("BuyerConversations", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller     User      @relation("SellerConversations", fields: [sellerId], references: [id], onDelete: Cascade)
+  messages   Message[]
+
+  @@unique([listingId, buyerId, sellerId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([updatedAt])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id
+  conversationId String       @map("conversation_id")
+  senderId       String       @map("sender_id")
+  body           String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+enum Role {
+  BUYER
+  SELLER
+  DEALER
+  BUSINESS
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum ListingStatus {
+  ACTIVE
+  PAUSED
+  SOLD
+  DRAFT
+}
