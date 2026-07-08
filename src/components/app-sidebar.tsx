@@ -6,6 +6,7 @@ type AppSidebarProps = {
   viewHref: (view: View, id?: string) => string;
   sidebarOpen: boolean;
   closeSidebar: () => void;
+  isAdmin: boolean;
 };
 
 const navItems: Array<[View, string]> = [
@@ -20,11 +21,13 @@ const navItems: Array<[View, string]> = [
   ["auth", "Kycja"],
 ];
 
-export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar }: AppSidebarProps) {
+export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar, isAdmin }: AppSidebarProps) {
   function navigate(nextView: View) {
     closeSidebar();
     go(nextView);
   }
+
+  const visibleNavItems = navItems.filter(([id]) => id !== "admin" || isAdmin);
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} aria-label="Navigimi kryesor">
@@ -43,7 +46,7 @@ export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar }: Ap
         </span>
       </a>
       <nav className="nav-list">
-        {navItems.map(([id, label]) => (
+        {visibleNavItems.map(([id, label]) => (
           <a
             key={id}
             className={`nav-link ${view === id ? "active" : ""}`}

@@ -76,6 +76,45 @@ export type DbMessage = {
   senderName: string;
 };
 
+export type DbAdminOverview = {
+  totals: {
+    users: number;
+    verifiedUsers: number;
+    listings: number;
+    activeListings: number;
+    soldListings: number;
+    conversations: number;
+    messages: number;
+  };
+  health: {
+    unverifiedUsers: number;
+    listingsWithoutImages: number;
+    conversationsWithoutMessages: number;
+    storageReady: boolean;
+  };
+  usage: {
+    topCategories: Array<{ name: string; count: number }>;
+    topLocations: Array<{ name: string; count: number }>;
+    roles: Array<{ name: string; count: number }>;
+  };
+  recentUsers: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    emailVerified: boolean;
+    createdAt: string;
+  }>;
+  recentListings: Array<{
+    id: string;
+    title: string;
+    sellerName: string;
+    status: string;
+    price: number;
+    createdAt: string;
+  }>;
+};
+
 type UserRecord = Prisma.UserGetPayload<Record<string, never>>;
 type ListingWithSeller = Prisma.ListingGetPayload<{ include: { seller: true } }>;
 type ConversationWithRelations = Prisma.ConversationGetPayload<{
@@ -441,4 +480,96 @@ export async function listMessagesForConversation(conversationId: string, userId
   });
 
   return messages.map(mapMessage);
+}
+
+function topCounts(values: Array<string | null | undefined>) {
+  const counts = new Map<string, number>();
+  values.forEach((value) => {
+    const label = value?.trim() || "Pa kategori";
+    counts.set(label, (counts.get(label) ?? 0) + 1);
+  });
+
+  return Array.from(counts.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+export async function getAdminOverview(): Promise<DbAdminOverview> {
+  const [users, listings, conversations, messagesCount, recentUsers, recentListings] = await Promise.all([
+    prisma.user.findMany({ select: { role: true, emailVerifiedAt: true } }),
+    prisma.listing.findMany({ select: { category: true, location: true, status: true, image: true, galleryJson: true } }),
+    prisma.conversation.findMany({
+      select: {
+        id: true,
+        messages: { select: { id: true }, take: 1 },
+      },
+    }),
+    prisma.message.count(),
+    prisma.user.findMany({
+      select: { id: true, name: true, email: true, role: true, emailVerifiedAt: true, createdAt: true },
+      orderBy: { createdAt: "desc" },
+      take: 8,
+    }),
+    prisma.listing.findMany({
+      select: { id: true, title: true, price: true, status: true, createdAt: true, seller: { select: { name: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 8,
+    }),
+  ]);
+
+  const verifiedUsers = users.filter((user) => user.emailVerifiedAt).length;
+  const activeListings = listings.filter((listing) => listing.status === "ACTIVE").length;
+  const soldListings = listings.filter((listing) => listing.status === "SOLD").length;
+  const listingsWithoutImages = listings.filter((listing) => {
+    const gallery = (() => {
+      try {
+        return JSON.parse(listing.galleryJson) as string[];
+      } catch {
+        return [];
+      }
+    })();
+    return !listing.image && gallery.length === 0;
+  }).length;
+
+  return {
+    totals: {
+      users: users.length,
+      verifiedUsers,
+      listings: listings.length,
+      activeListings,
+      soldListings,
+      conversations: conversations.length,
+      messages: messagesCount,
+    },
+    health: {
+      unverifiedUsers: users.length - verifiedUsers,
+      listingsWithoutImages,
+      conversationsWithoutMessages: conversations.filter((conversation) => conversation.messages.length === 0).length,
+      storageReady: Boolean(
+        process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_STORAGE_BUCKET,
+      ),
+    },
+    usage: {
+      topCategories: topCounts(listings.map((listing) => listing.category)),
+      topLocations: topCounts(listings.map((listing) => listing.location)),
+      roles: topCounts(users.map((user) => user.role)),
+    },
+    recentUsers: recentUsers.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      emailVerified: Boolean(user.emailVerifiedAt),
+      createdAt: toIso(user.createdAt) ?? "",
+    })),
+    recentListings: recentListings.map((listing) => ({
+      id: listing.id,
+      title: listing.title,
+      sellerName: listing.seller.name,
+      status: listing.status,
+      price: listing.price,
+      createdAt: toIso(listing.createdAt) ?? "",
+    })),
+  };
 }

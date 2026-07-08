@@ -4,6 +4,7 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { ListingCard } from "@/components/listing-card";
+import { isFounderEmail } from "@/lib/admin";
 
 export type View = "home" | "market" | "auth" | "details" | "create" | "mine" | "transactions" | "messages" | "kyc" | "admin";
 
@@ -58,6 +59,45 @@ type Conversation = {
   lastMessage: string;
   updatedAt: string;
   messages: ConversationMessage[];
+};
+
+type AdminOverview = {
+  totals: {
+    users: number;
+    verifiedUsers: number;
+    listings: number;
+    activeListings: number;
+    soldListings: number;
+    conversations: number;
+    messages: number;
+  };
+  health: {
+    unverifiedUsers: number;
+    listingsWithoutImages: number;
+    conversationsWithoutMessages: number;
+    storageReady: boolean;
+  };
+  usage: {
+    topCategories: Array<{ name: string; count: number }>;
+    topLocations: Array<{ name: string; count: number }>;
+    roles: Array<{ name: string; count: number }>;
+  };
+  recentUsers: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    emailVerified: boolean;
+    createdAt: string;
+  }>;
+  recentListings: Array<{
+    id: string;
+    title: string;
+    sellerName: string;
+    status: string;
+    price: number;
+    createdAt: string;
+  }>;
 };
 
 const categories = ["Vetura", "Banesa", "Shtepi", "Motocikleta", "Elektronike", "Makineri", "Biznese", "Industriale"];
@@ -283,6 +323,8 @@ export default function MarketplaceApp({
   const [activeConversationId, setActiveConversationId] = useState("");
   const [pendingMessageListing, setPendingMessageListing] = useState<Listing | null>(null);
   const [messageDraft, setMessageDraft] = useState("");
+  const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
+  const isAdmin = isFounderEmail(user?.email);
   const selectedListing = marketListings.find((item) => item.id === selectedId);
   const selected = selectedListing ?? initialListing;
   const selectedIsReady = Boolean(selectedListing);
@@ -398,6 +440,29 @@ export default function MarketplaceApp({
       .catch(() => notify("Mesazhet nuk u lexuan."));
   }, [view, user, pendingMessageListing]);
 
+  useEffect(() => {
+    if (view !== "admin" || !user || !isAdmin) return;
+
+    let active = true;
+    fetch("/api/admin/overview")
+      .then((response) => readJsonResponse(response).then((result) => ({ ok: response.ok, result })))
+      .then(({ ok, result }) => {
+        if (!active) return;
+        if (!ok) {
+          notify(result.error ?? "Admin nuk u lexua.");
+          return;
+        }
+        setAdminOverview(result.overview ?? null);
+      })
+      .catch(() => {
+        if (active) notify("Admin nuk u lexua.");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isAdmin, user, view]);
+
   function notify(message: string) {
     setToast(message);
     window.setTimeout(() => setToast(""), 2200);
@@ -418,6 +483,20 @@ export default function MarketplaceApp({
       setView("auth");
       window.history.pushState(null, "", viewHref("auth"));
       return;
+    }
+    if (nextView === "admin") {
+      if (!user) {
+        notify("Se pari duhet te kycesh.");
+        setView("auth");
+        window.history.pushState(null, "", viewHref("auth"));
+        return;
+      }
+      if (!isFounderEmail(user.email)) {
+        notify("Vetem founder-at kane qasje ne Admin.");
+        setView("market");
+        window.history.pushState(null, "", viewHref("market"));
+        return;
+      }
     }
     if (nextView === "create") {
       setEditingListing(null);
@@ -765,6 +844,7 @@ export default function MarketplaceApp({
         viewHref={viewHref}
         sidebarOpen={sidebarOpen}
         closeSidebar={() => setSidebarOpen(false)}
+        isAdmin={isAdmin}
       />
 
       <main>
@@ -1469,20 +1549,125 @@ export default function MarketplaceApp({
           </section>
         )}
 
-        {view === "admin" && (
+        {view === "admin" && isAdmin && (
           <section className="view active">
-            <div className="page-head"><div><p className="eyebrow">Admin dashboard</p><h1>Menaxhim perdoruesish, shpalljesh, transaksionesh dhe fraud monitoring.</h1></div></div>
-            <div className="admin-grid">
-              <div className="admin-card"><span>Perdorues</span><strong>48,210</strong><small>312 ne verifikim</small></div>
-              <div className="admin-card"><span>Shpallje</span><strong>18,604</strong><small>81 presin miratim</small></div>
-              <div className="admin-card"><span>Transaksione</span><strong>EUR 7.8M</strong><small>kete muaj</small></div>
-              <div className="admin-card alert"><span>Fraud flags</span><strong>26</strong><small>7 me prioritet te larte</small></div>
+            <div className="page-head">
+              <div>
+                <p className="eyebrow">Admin dashboard</p>
+                <h1>Kontroll real per perdorues, shpallje, mesazhe dhe shendetin e platformes.</h1>
+              </div>
             </div>
-            <div className="risk-table">
-              <div className="table-row head"><span>Rasti</span><span>Sinjali</span><span>Statusi</span></div>
-              <div className="table-row"><span>#FK-2041</span><span>Cmim 38% nen treg</span><span>Review</span></div>
-              <div className="table-row"><span>#FK-2042</span><span>Foto te perseritura</span><span>Blocked</span></div>
-            </div>
+
+            {!adminOverview ? (
+              <section className="empty-state">
+                <h2>Duke lexuar dashboard-in.</h2>
+                <p>Te dhenat po merren nga databaza.</p>
+              </section>
+            ) : adminOverview ? (
+              <>
+                <div className="admin-grid">
+                  <div className="admin-card">
+                    <span>Perdorues</span>
+                    <strong>{adminOverview.totals.users}</strong>
+                    <small>{adminOverview.totals.verifiedUsers} email te verifikuar</small>
+                  </div>
+                  <div className="admin-card">
+                    <span>Shpallje</span>
+                    <strong>{adminOverview.totals.listings}</strong>
+                    <small>{adminOverview.totals.activeListings} aktive, {adminOverview.totals.soldListings} te shitura</small>
+                  </div>
+                  <div className="admin-card">
+                    <span>Biseda</span>
+                    <strong>{adminOverview.totals.conversations}</strong>
+                    <small>{adminOverview.totals.messages} mesazhe ne platforme</small>
+                  </div>
+                  <div className={`admin-card ${adminOverview.health.unverifiedUsers ? "alert" : ""}`}>
+                    <span>Probleme</span>
+                    <strong>
+                      {adminOverview.health.unverifiedUsers + adminOverview.health.listingsWithoutImages + adminOverview.health.conversationsWithoutMessages}
+                    </strong>
+                    <small>pika qe duhen kontrolluar</small>
+                  </div>
+                </div>
+
+                <div className="admin-layout">
+                  <section className="risk-table">
+                    <div className="table-row head"><span>Kontrolli</span><span>Gjendja</span><span>Statusi</span></div>
+                    <div className="table-row">
+                      <span>Email pa verifikim</span>
+                      <span>{adminOverview.health.unverifiedUsers} perdorues duhet ta verifikojne emailin</span>
+                      <span>{adminOverview.health.unverifiedUsers ? "Review" : "OK"}</span>
+                    </div>
+                    <div className="table-row">
+                      <span>Shpallje pa foto</span>
+                      <span>{adminOverview.health.listingsWithoutImages} shpallje nuk kane galeri</span>
+                      <span>{adminOverview.health.listingsWithoutImages ? "Review" : "OK"}</span>
+                    </div>
+                    <div className="table-row">
+                      <span>Storage</span>
+                      <span>{adminOverview.health.storageReady ? "Supabase Storage eshte konfiguruar" : "Mungon konfigurimi i storage"}</span>
+                      <span>{adminOverview.health.storageReady ? "OK" : "Fix"}</span>
+                    </div>
+                  </section>
+
+                  <section className="admin-panel">
+                    <h2>Ku po perdoret me shume</h2>
+                    <div className="usage-grid">
+                      <div>
+                        <strong>Kategori</strong>
+                        {adminOverview.usage.topCategories.map((item) => (
+                          <span key={item.name}>{item.name}: {item.count}</span>
+                        ))}
+                      </div>
+                      <div>
+                        <strong>Lokacione</strong>
+                        {adminOverview.usage.topLocations.map((item) => (
+                          <span key={item.name}>{item.name}: {item.count}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                </div>
+
+                <div className="admin-layout">
+                  <section className="risk-table">
+                    <div className="table-row head"><span>Klienti</span><span>Email</span><span>Statusi</span></div>
+                    {adminOverview.recentUsers.map((item) => (
+                      <div className="table-row" key={item.id}>
+                        <span>{item.name}</span>
+                        <span>{item.email}</span>
+                        <span>{item.emailVerified ? "Verified" : "Pa verifikim"}</span>
+                      </div>
+                    ))}
+                  </section>
+
+                  <section className="risk-table">
+                    <div className="table-row head"><span>Shpallja</span><span>Shitesi</span><span>Statusi</span></div>
+                    {adminOverview.recentListings.map((item) => (
+                      <div className="table-row" key={item.id}>
+                        <span>{item.title}</span>
+                        <span>{item.sellerName} - {item.price.toLocaleString("de-DE")} EUR</span>
+                        <span>{item.status}</span>
+                      </div>
+                    ))}
+                  </section>
+                </div>
+              </>
+            ) : (
+              <section className="empty-state">
+                <h2>Nuk ka te dhena admin.</h2>
+                <p>Provo perseri pas pak.</p>
+              </section>
+            )}
+          </section>
+        )}
+
+        {view === "admin" && !isAdmin && (
+          <section className="view active">
+            <section className="empty-state">
+              <h2>Nuk ke qasje ne Admin.</h2>
+              <p>Kjo pjese eshte vetem per founder-at e platformes.</p>
+            </section>
           </section>
         )}
 
