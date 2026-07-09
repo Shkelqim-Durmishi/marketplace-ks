@@ -11,7 +11,7 @@ type PageProps = {
   }>;
 };
 
-const validViews: View[] = ["home", "market", "auth", "details", "create", "mine", "transactions", "messages", "kyc", "admin"];
+const validViews: View[] = ["home", "market", "auth", "details", "create", "mine", "messages", "admin"];
 
 export default async function Page({ searchParams }: PageProps) {
   const params = await searchParams;

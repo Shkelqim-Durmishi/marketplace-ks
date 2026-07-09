@@ -14,9 +14,7 @@ const navItems: Array<[View, string]> = [
   ["market", "Marketplace"],
   ["create", "Krijo Shpallje"],
   ["mine", "Shpalljet e mia"],
-  ["transactions", "Transaksionet"],
   ["messages", "Mesazhet"],
-  ["kyc", "KYC"],
   ["admin", "Admin"],
   ["auth", "Kycja"],
 ];

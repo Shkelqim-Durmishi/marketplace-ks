@@ -6,11 +6,10 @@ type ListingCardProps = {
   money: (value: number) => string;
   viewHref: (view: View, id?: string) => string;
   openListing: (listing: Listing) => void;
-  go: (view: View) => void;
   notify: (message: string) => void;
 };
 
-export function ListingCard({ item, userExists, money, viewHref, openListing, go, notify }: ListingCardProps) {
+export function ListingCard({ item, userExists, money, viewHref, openListing, notify }: ListingCardProps) {
   return (
     <article className="listing-card">
       <a
@@ -35,9 +34,6 @@ export function ListingCard({ item, userExists, money, viewHref, openListing, go
         <div className="listing-actions">
           <a className="secondary small nav-action" href={viewHref("details", item.id)} onClick={() => openListing(item)}>
             Shiko detajet
-          </a>
-          <a className="primary small nav-action" href={viewHref("transactions")} onClick={() => go("transactions")}>
-            Transaksion
           </a>
           <button className="secondary small" type="button" onClick={() => notify(userExists ? "U ruajt ne favorite." : "Kycu per favorite.")}>
             Ruaj

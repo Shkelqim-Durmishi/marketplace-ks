@@ -6,7 +6,7 @@ import { AppTopbar } from "@/components/app-topbar";
 import { ListingCard } from "@/components/listing-card";
 import { isFounderEmail } from "@/lib/admin";
 
-export type View = "home" | "market" | "auth" | "details" | "create" | "mine" | "transactions" | "messages" | "kyc" | "admin";
+export type View = "home" | "market" | "auth" | "details" | "create" | "mine" | "messages" | "admin";
 
 export type User = {
   id: string;
@@ -227,18 +227,7 @@ const listings: Listing[] = [
   },
 ];
 
-const transactionSteps = [
-  "Bleresi filloi transaksionin",
-  "Shitesi konfirmoi disponueshmerine",
-  "Kontrata digjitale u gjenerua",
-  "Udhezimet per pagese u derguan",
-  "Deshmia e pageses u ngarkua",
-  "Pagesa u verifikua",
-  "Dorezimi u krye",
-  "Transaksioni perfundoi",
-];
-
-const views: View[] = ["home", "market", "auth", "details", "create", "mine", "transactions", "messages", "kyc", "admin"];
+const views: View[] = ["home", "market", "auth", "details", "create", "mine", "messages", "admin"];
 
 function money(value: number) {
   return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
@@ -312,7 +301,6 @@ export default function MarketplaceApp({
   const [mainPhoto, setMainPhoto] = useState(initialListing.gallery[0]);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
-  const [transactionIndex, setTransactionIndex] = useState(4);
   const [authMode, setAuthMode] = useState<AuthMode>(getInitialAuthMode(initialResetToken, initialAuthMode));
   const [resetToken, setResetToken] = useState(initialResetToken ?? "");
   const [resetLink, setResetLink] = useState("");
@@ -478,7 +466,7 @@ export default function MarketplaceApp({
 
   function go(nextView: View) {
     setSidebarOpen(false);
-    if (["create", "mine", "transactions", "messages", "kyc"].includes(nextView) && !user) {
+    if (["create", "mine", "messages"].includes(nextView) && !user) {
       notify("Se pari duhet te kycesh.");
       setView("auth");
       window.history.pushState(null, "", viewHref("auth"));
@@ -872,15 +860,12 @@ export default function MarketplaceApp({
                 <p className="eyebrow">Kosove - Bank transfer - Verified deals</p>
                 <h1>Marketplace-ks</h1>
                 <p className="hero-text">
-                  Platforme moderne per vetura, prona, makineri, biznese dhe asete te vlefshme me verifikim identiteti,
-                  kontrata digjitale dhe gjurmim transaksionesh.
+                  Platforme moderne per vetura, prona, makineri, biznese dhe asete te vlefshme me verifikim profili,
+                  shpallje reale dhe komunikim te sigurt brenda platformes.
                 </p>
                 <div className="hero-actions">
                   <a className="primary nav-action" href={viewHref("market")} onClick={() => go("market")}>
                     Shfleto tregun
-                  </a>
-                  <a className="secondary nav-action" href={viewHref("transactions")} onClick={() => go("transactions")}>
-                    Fillo transaksion te sigurt
                   </a>
                 </div>
               </div>
@@ -982,7 +967,6 @@ export default function MarketplaceApp({
                       money={money}
                       viewHref={viewHref}
                       openListing={openListing}
-                      go={go}
                       notify={notify}
                     />
                   ))}
@@ -1005,9 +989,6 @@ export default function MarketplaceApp({
                 <button className="secondary" type="button" disabled={!selectedIsReady} onClick={() => startConversation(selected)}>
                   Dergo mesazh
                 </button>
-                <a className="primary nav-action" href={viewHref("transactions")} onClick={() => go("transactions")}>
-                  Fillo transaksionin
-                </a>
               </div>
             </div>
             {selectedIsReady ? (
@@ -1088,7 +1069,7 @@ export default function MarketplaceApp({
             <div className="page-head">
               <div>
                 <p className="eyebrow">Llogaria</p>
-                <h1>Kycu ose krijo llogari per te ruajtur shpallje dhe per te nisur transaksione.</h1>
+                <h1>Kycu ose krijo llogari per te ruajtur shpallje dhe per te derguar mesazhe.</h1>
               </div>
             </div>
             <div className={user ? "account-layout" : "auth-modern-layout simple"}>
@@ -1099,12 +1080,11 @@ export default function MarketplaceApp({
                     <span className="badge verified">Verified marketplace</span>
                     <h2>Llogari e sigurt per blerje dhe shitje.</h2>
                     <p>
-                      Krijo profil, ruaj shpallje favorite, nis transaksione te sigurta dhe verifiko identitetin per badge
-                      te besueshmerise.
+                    Krijo profil, ruaj shpallje favorite, dergo mesazhe dhe menaxho shpalljet e tua ne nje vend.
                     </p>
                     <div className="auth-benefits">
                       <span>Bank transfer flow</span>
-                      <span>KYC & business badge</span>
+                    <span>Profil i verifikuar</span>
                       <span>Fraud monitoring</span>
                     </div>
                   </section>
@@ -1149,7 +1129,7 @@ export default function MarketplaceApp({
                     {authMode === "register" && (
                       <form className="auth-panel flat" method="post" action="/api/auth/register" onSubmit={register}>
                         <h2>Krijo profilin</h2>
-                        <p className="auth-subtitle">Hap llogari per blerje, shitje dhe transaksione te sigurta.</p>
+                        <p className="auth-subtitle">Hap llogari per blerje, shitje dhe mesazhe brenda platformes.</p>
                         <label>
                           Emri
                           <input name="name" required placeholder="Emri dhe mbiemri" />
@@ -1412,38 +1392,6 @@ export default function MarketplaceApp({
           </section>
         )}
 
-        {view === "transactions" && (
-          <section className="view active">
-            <div className="page-head">
-              <div>
-                <p className="eyebrow">Transaksione</p>
-                <h1>Proces i gjurmuar me kontrata digjitale dhe prova pagese.</h1>
-              </div>
-              <button className="primary" type="button" onClick={() => setTransactionIndex(Math.min(transactionSteps.length - 1, transactionIndex + 1))}>
-                Hapi tjeter
-              </button>
-            </div>
-            <div className="transaction-board">
-              <div className="transaction-card">
-                <div className="console-head"><span>BMW X5 xDrive</span><strong>EUR 34,500</strong></div>
-                <ol className="timeline">
-                  {transactionSteps.map((step, index) => (
-                    <li key={step} className={index < transactionIndex ? "done" : index === transactionIndex ? "current" : ""}>
-                      {index + 1}. {step}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-              <div className="documents-panel">
-                <h2>Dokumente</h2>
-                {["Kontrata digjitale", "Udhezimet bankare", "Fatura PDF", "Mosmarreveshje"].map((item) => (
-                  <button className="doc-row" key={item} type="button">{item}<span>Demo</span></button>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
         {view === "messages" && (
           <section className="view active">
             <div className="page-head"><div><p className="eyebrow">Mesazhet</p><h1>Biseda brenda platformes me reference shpalljeje.</h1></div></div>
@@ -1527,13 +1475,6 @@ export default function MarketplaceApp({
                 )}
               </div>
             </div>
-          </section>
-        )}
-
-        {view === "kyc" && (
-          <section className="view active">
-            <div className="page-head"><div><p className="eyebrow">KYC</p><h1>Verifikim identiteti dhe biznesi me miratim administratori.</h1></div></div>
-            <div className="kyc-grid">{["Dokument personal", "Selfie verification", "Biznesi", "Miratim admin"].map((item, index) => <div className={`kyc-step ${index < 2 ? "done" : index === 2 ? "current" : ""}`} key={item}><strong>{item}</strong><span>Demo status</span></div>)}</div>
           </section>
         )}
 

@@ -409,43 +409,28 @@ input, select, textarea {
 .hero-text { max-width: 680px; font-size: 18px; line-height: 1.65; }
 .hero-actions, .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
-.deal-console, .insight-panel, .filters, .editor-panel, .preview-panel, .transaction-card, .documents-panel, .chat-window, .threads, .risk-table {
+.insight-panel, .filters, .editor-panel, .preview-panel, .chat-window, .threads, .risk-table {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: var(--shadow);
 }
 
-.deal-console {
-  color: var(--text);
-  padding: 22px;
-}
-
-.console-head, .section-title, .results-bar, .chat-head, .doc-row {
+.console-head, .section-title, .results-bar, .chat-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
 }
 
-.mini-timeline, .timeline { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 12px; }
-.mini-timeline li, .timeline li {
-  padding: 12px;
-  border-radius: 8px;
-  background: var(--surface-2);
-  color: var(--muted);
-}
-.mini-timeline .done, .timeline .done { color: var(--primary-2); font-weight: 800; }
-.mini-timeline .current, .timeline .current { outline: 2px solid var(--accent); color: var(--text); font-weight: 800; }
-
-.stats-grid, .category-grid, .listing-grid, .admin-grid, .kyc-grid {
+.stats-grid, .category-grid, .listing-grid, .admin-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
 .stats-grid { margin: 14px 0; }
-.stats-grid div, .category-card, .listing-card, .admin-card, .kyc-step {
+.stats-grid div, .category-card, .listing-card, .admin-card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -456,7 +441,7 @@ input, select, textarea {
 
 .content-band { padding: 26px 0; color: var(--text); }
 .section-title { margin-bottom: 14px; }
-.section-title h2, .filters h2, .preview-panel h2, .documents-panel h2, .insight-panel h2 { margin: 0; color: var(--text); }
+.section-title h2, .filters h2, .preview-panel h2, .insight-panel h2 { margin: 0; color: var(--text); }
 .two-column { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; }
 .category-card { display: grid; gap: 12px; min-height: 128px; }
 .category-card { color: var(--text); text-decoration: none; }
@@ -913,7 +898,7 @@ input, select, textarea {
   gap: 5px;
 }
 
-.filters, .editor-panel, .preview-panel, .documents-panel, .transaction-card, .threads, .chat-window, .insight-panel {
+.filters, .editor-panel, .preview-panel, .threads, .chat-window, .insight-panel {
   padding: 16px;
 }
 .filters { position: sticky; top: 86px; display: grid; gap: 14px; height: fit-content; box-shadow: none; }
@@ -940,7 +925,7 @@ input, select, textarea {
 }
 .segmented button.active { background: var(--surface-2); color: var(--text); font-weight: 800; }
 
-.create-layout, .transaction-board, .inbox {
+.create-layout, .inbox {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 16px;
@@ -1124,10 +1109,6 @@ input, select, textarea {
   color: var(--text);
 }
 
-.kyc-step { min-height: 140px; display: grid; align-content: space-between; }
-.kyc-step.done { border-color: var(--primary); }
-.kyc-step.current { border-color: var(--accent); }
-
 .admin-card.alert { border-color: var(--danger); }
 .admin-layout {
   display: grid;
@@ -1202,7 +1183,7 @@ input, select, textarea {
   .menu-button { display: inline-grid; place-items: center; }
   .topbar { grid-template-columns: auto minmax(0, 1fr) auto auto auto; }
   .topbar .primary.small { display: none; }
-  .hero, .two-column, .market-layout, .auth-layout, .auth-modern-layout, .account-layout, .create-layout, .transaction-board, .inbox, .vehicle-detail { grid-template-columns: 1fr; }
+  .hero, .two-column, .market-layout, .auth-layout, .auth-modern-layout, .account-layout, .create-layout, .inbox, .vehicle-detail { grid-template-columns: 1fr; }
   .filters { position: static; }
   .detail-topbar { top: 74px; }
   .main-photo { min-height: 420px; }
@@ -1289,7 +1270,7 @@ input, select, textarea {
   }
   .hero h1 { font-size: 44px; }
   .page-head { display: grid; align-items: start; }
-  .stats-grid, .category-grid, .listing-grid, .listing-grid.compact, .admin-grid, .kyc-grid, .usage-grid { grid-template-columns: 1fr; }
+  .stats-grid, .category-grid, .listing-grid, .listing-grid.compact, .admin-grid, .usage-grid { grid-template-columns: 1fr; }
   .range-pair { grid-template-columns: 1fr; }
   .results-bar { align-items: start; flex-direction: column; }
   .bubble { max-width: 92%; }
