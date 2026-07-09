@@ -102,6 +102,65 @@ type AdminOverview = {
 
 const categories = ["Vetura", "Banesa", "Shtepi", "Motocikleta", "Elektronike", "Makineri", "Biznese", "Industriale"];
 
+const homeCategoryCards = [
+  {
+    name: "Vetura",
+    label: "Vetura",
+    count: "12,543 shpallje",
+    icon: "Auto",
+    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    name: "Banesa",
+    label: "Banesa",
+    count: "3,256 shpallje",
+    icon: "Home",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    name: "Motocikleta",
+    label: "Moto",
+    count: "2,145 shpallje",
+    icon: "Moto",
+    image: "https://images.unsplash.com/photo-1558981852-426c6c22a060?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    name: "Makineri",
+    label: "Makineri",
+    count: "1,843 shpallje",
+    icon: "Mach",
+    image: "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    name: "Biznese",
+    label: "Biznese",
+    count: "980 shpallje",
+    icon: "Biz",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    name: "Elektronike",
+    label: "Elektronike",
+    count: "1,209 shpallje",
+    icon: "Tech",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    name: "Industriale",
+    label: "Industriale",
+    count: "1,120 shpallje",
+    icon: "Ind",
+    image: "https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    name: "",
+    label: "Tjeter",
+    count: "1,504 shpallje",
+    icon: "More",
+    image: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?auto=format&fit=crop&w=600&q=80",
+  },
+];
+
 type CategoryField = {
   key: string;
   label: string;
@@ -933,63 +992,147 @@ export default function MarketplaceApp({
 
         {view === "home" && (
           <section className="view active">
-            <div className="hero">
-              <div className="hero-copy">
-                <p className="eyebrow">Kosove - Bank transfer - Verified deals</p>
-                <h1>Marketplace-ks</h1>
+            <div className="home-hero">
+              <div className="home-hero-copy">
+                <h1>
+                  Miresevini ne
+                  <span>Marketplace-ks</span>
+                </h1>
                 <p className="hero-text">
-                  Platforme moderne per vetura, prona, makineri, biznese dhe asete te vlefshme me verifikim profili,
-                  shpallje reale dhe komunikim te sigurt brenda platformes.
+                  Platforma me e sigurt per vetura, prona, makineri, biznese dhe asete te vlefshme.
                 </p>
-                <div className="hero-actions">
-                  <a className="primary nav-action" href={viewHref("market")} onClick={() => go("market")}>
-                    Shfleto tregun
-                  </a>
+                <div className="hero-trust-row">
+                  <span>18,600+ Shpallje aktive</span>
+                  <span>1,240 Shites te verifikuar</span>
+                  <span>24/7 AI Monitoring</span>
                 </div>
               </div>
+              <form
+                className="hero-search-panel"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  go("market");
+                }}
+              >
+                <label>
+                  <span>Kerko</span>
+                  <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Kerko produkte, kategori, marka..." />
+                </label>
+                <label>
+                  <span>Kategoria</span>
+                  <select value={category} onChange={(event) => setCategory(event.target.value)}>
+                    <option value="">Te gjitha kategorite</option>
+                    {categories.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Lokacioni</span>
+                  <input placeholder="Lokacioni" />
+                </label>
+                <label>
+                  <span>Cmimi</span>
+                  <input placeholder="Cmimi" />
+                </label>
+                <button className="primary" type="submit">Gjej tani</button>
+              </form>
             </div>
-            <div className="stats-grid">
-              <div>
-                <strong>18.6k</strong>
-                <span>shpallje aktive</span>
+            <div className="home-stats-grid">
+              <div className="home-stat-card">
+                <span className="home-stat-icon">Bag</span>
+                <strong>18.6k+</strong>
+                <small>Shpallje aktive</small>
+                <em>Sot</em>
               </div>
-              <div>
-                <strong>EUR 284M</strong>
-                <span>vlere e listuar</span>
+              <div className="home-stat-card blue">
+                <span className="home-stat-icon">Cash</span>
+                <strong>284M€</strong>
+                <small>Vlere e listuar</small>
+                <em>Totali</em>
               </div>
-              <div>
+              <div className="home-stat-card purple">
+                <span className="home-stat-icon">User</span>
                 <strong>1,240</strong>
-                <span>shitese te verifikuar</span>
+                <small>Shites te verifikuar</small>
+                <em>Te gjithe</em>
               </div>
-              <div>
+              <div className="home-stat-card orange">
+                <span className="home-stat-icon">AI</span>
                 <strong>24/7</strong>
-                <span>fraud monitoring</span>
+                <small>AI Fraud Monitoring</small>
+                <em>Sistem aktiv</em>
               </div>
             </div>
-            <section className="content-band">
+            <section className="home-section">
               <div className="section-title">
                 <h2>Kategori kryesore</h2>
                 <a className="text-button nav-action" href={viewHref("market")} onClick={() => go("market")}>
-                  Te gjitha
+                  Shiko te gjitha
                 </a>
               </div>
-              <div className="category-grid">
-                {categories.map((item) => (
+              <div className="home-category-grid">
+                {homeCategoryCards.map((item) => (
                   <a
-                    className="category-card"
-                    key={item}
+                    className="home-category-card"
+                    key={item.label}
                     href={viewHref("market")}
                     onClick={() => {
-                      setCategory(item);
+                      setCategory(item.name);
                       go("market");
                     }}
+                    style={{ backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, .15), rgba(15, 23, 42, .86)), url('${item.image}')` }}
                   >
-                    <span className="category-icon">{item.slice(0, 4)}</span>
-                    <strong>{item}</strong>
-                    <span>Kategori e verifikuar me filtera dhe risk monitoring.</span>
+                    <span>{item.icon}</span>
+                    <strong>{item.label}</strong>
+                    <small>{item.count}</small>
                   </a>
                 ))}
               </div>
+            </section>
+            <section className="home-bottom-grid">
+              <div className="home-latest">
+                <div className="section-title">
+                  <h2>Shpalljet me te fundit</h2>
+                  <a className="text-button nav-action" href={viewHref("market")} onClick={() => go("market")}>
+                    Shiko te gjitha
+                  </a>
+                </div>
+                <div className="home-listing-row">
+                  {marketListings.slice(0, 4).map((item) => (
+                    <a
+                      className="home-listing-card"
+                      key={item.id}
+                      href={viewHref("details", item.id)}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        openListing(item);
+                      }}
+                    >
+                      <span className="home-listing-image" style={{ backgroundImage: `url('${item.image}')` }}>
+                        <em>Verifikuar</em>
+                        <span className="save-pill">Save</span>
+                      </span>
+                      <strong>{item.title}</strong>
+                      <small>{item.location} - {item.year}</small>
+                      <span>{money(item.price)}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <aside className="seller-verify-card">
+                <span className="verify-shield">OK</span>
+                <h2>Behu shites i verifikuar</h2>
+                <p>Rrit besueshmerine dhe shiko shpalljet e tua me lart.</p>
+                <ul>
+                  <li>Badge te verifikuar</li>
+                  <li>Me shume shikime</li>
+                  <li>Mesazhe me te sigurta</li>
+                </ul>
+                <a className="primary nav-action" href={viewHref("auth")} onClick={() => go("auth")}>
+                  Verifiko profilin
+                </a>
+              </aside>
             </section>
           </section>
         )}

@@ -73,7 +73,7 @@ export function AppTopbar({
           go("create");
         }}
       >
-        + Shpallje
+        + Shto Shpallje
       </a>
       <button
         className="theme-toggle"
