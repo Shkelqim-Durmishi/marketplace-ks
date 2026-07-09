@@ -932,6 +932,21 @@ input, select, textarea {
 }
 .editor-panel { display: grid; gap: 14px; box-shadow: none; }
 .preview-panel { display: grid; gap: 16px; height: fit-content; }
+.dynamic-fields {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+}
+.dynamic-fields-head {
+  display: grid;
+  gap: 4px;
+}
+.dynamic-fields-head span {
+  color: var(--muted);
+  font-size: 13px;
+}
 .form-hint {
   color: var(--muted);
   display: block;

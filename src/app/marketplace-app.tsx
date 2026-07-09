@@ -102,6 +102,81 @@ type AdminOverview = {
 
 const categories = ["Vetura", "Banesa", "Shtepi", "Motocikleta", "Elektronike", "Makineri", "Biznese", "Industriale"];
 
+type CategoryField = {
+  key: string;
+  label: string;
+  placeholder: string;
+  type?: "text" | "number";
+  options?: string[];
+};
+
+const categoryFields: Record<string, CategoryField[]> = {
+  Vetura: [
+    { key: "Marka", label: "Marka", placeholder: "Mercedes-Benz" },
+    { key: "Modeli", label: "Modeli", placeholder: "GLE 350d" },
+    { key: "Kilometrazhi", label: "Kilometrazhi", placeholder: "68,000 km" },
+    { key: "Karburanti", label: "Karburanti", placeholder: "Diesel", options: ["Diesel", "Benzine", "Hybrid", "Elektrike", "Gas"] },
+    { key: "Transmisioni", label: "Transmisioni", placeholder: "Automatik", options: ["Automatik", "Manual"] },
+    { key: "Dogana", label: "Dogana", placeholder: "E paguar" },
+  ],
+  Banesa: [
+    { key: "Siperfaqja", label: "Siperfaqja", placeholder: "96 m2" },
+    { key: "Dhoma", label: "Dhoma", placeholder: "3", type: "number" },
+    { key: "Kati", label: "Kati", placeholder: "5" },
+    { key: "Qellimi", label: "Per shitje / qira", placeholder: "Per shitje", options: ["Per shitje", "Me qira"] },
+    { key: "Mobiluar", label: "Mobiluar", placeholder: "Po", options: ["Po", "Jo", "Pjeserisht"] },
+    { key: "Dokumentacioni", label: "Dokumentacioni", placeholder: "I rregullt" },
+  ],
+  Shtepi: [
+    { key: "Siperfaqja", label: "Siperfaqja e shtepise", placeholder: "180 m2" },
+    { key: "Trualli", label: "Trualli", placeholder: "4 ari" },
+    { key: "Dhoma", label: "Dhoma", placeholder: "5", type: "number" },
+    { key: "Kate", label: "Kate", placeholder: "2", type: "number" },
+    { key: "Qellimi", label: "Per shitje / qira", placeholder: "Per shitje", options: ["Per shitje", "Me qira"] },
+    { key: "Ngrohja", label: "Ngrohja", placeholder: "Qendrore" },
+  ],
+  Motocikleta: [
+    { key: "Marka", label: "Marka", placeholder: "Yamaha" },
+    { key: "Modeli", label: "Modeli", placeholder: "MT-07" },
+    { key: "Kilometrazhi", label: "Kilometrazhi", placeholder: "18,000 km" },
+    { key: "Kubikazha", label: "Kubikazha", placeholder: "689 cc" },
+    { key: "Karburanti", label: "Karburanti", placeholder: "Benzine" },
+    { key: "Dokumentacioni", label: "Dokumentacioni", placeholder: "I rregullt" },
+  ],
+  Elektronike: [
+    { key: "Marka", label: "Marka", placeholder: "Apple" },
+    { key: "Modeli", label: "Modeli", placeholder: "MacBook Pro" },
+    { key: "Gjendja", label: "Gjendja", placeholder: "Si e re", options: ["E re", "Si e re", "E perdorur"] },
+    { key: "Garancioni", label: "Garancioni", placeholder: "12 muaj" },
+    { key: "Memoria", label: "Memoria / kapaciteti", placeholder: "512 GB" },
+    { key: "Aksesoret", label: "Aksesoret", placeholder: "Karikues, kuti" },
+  ],
+  Makineri: [
+    { key: "Marka", label: "Marka", placeholder: "Caterpillar" },
+    { key: "Modeli", label: "Modeli", placeholder: "320" },
+    { key: "OrePune", label: "Ore pune", placeholder: "4,200 h" },
+    { key: "Gjendja", label: "Gjendja", placeholder: "Operative" },
+    { key: "Kapaciteti", label: "Kapaciteti", placeholder: "20 ton" },
+    { key: "Servisi", label: "Servisi", placeholder: "I rregullt" },
+  ],
+  Biznese: [
+    { key: "LlojiBiznesit", label: "Lloji i biznesit", placeholder: "Restaurant, market, servis" },
+    { key: "Siperfaqja", label: "Siperfaqja", placeholder: "120 m2" },
+    { key: "Qellimi", label: "Shitet / leshohet", placeholder: "Shitet", options: ["Shitet", "Leshohet me qira"] },
+    { key: "Punetore", label: "Punetore", placeholder: "6", type: "number" },
+    { key: "Inventari", label: "Inventari", placeholder: "I perfshire" },
+    { key: "Dokumentacioni", label: "Dokumentacioni", placeholder: "Biznes aktiv" },
+  ],
+  Industriale: [
+    { key: "LlojiAsetit", label: "Lloji i asetit", placeholder: "Depo, fabrike, toke industriale" },
+    { key: "Siperfaqja", label: "Siperfaqja", placeholder: "1,500 m2" },
+    { key: "Qellimi", label: "Per shitje / qira", placeholder: "Per shitje", options: ["Per shitje", "Me qira"] },
+    { key: "Kapaciteti", label: "Kapaciteti", placeholder: "Kapacitet prodhimi / magazinimi" },
+    { key: "Infrastruktura", label: "Infrastruktura", placeholder: "Rryme, uje, rruge" },
+    { key: "Lejet", label: "Lejet", placeholder: "Te kompletuara" },
+  ],
+};
+
 const listings: Listing[] = [
   {
     id: "bmw-x5-40d",
@@ -312,6 +387,7 @@ export default function MarketplaceApp({
   const [pendingMessageListing, setPendingMessageListing] = useState<Listing | null>(null);
   const [messageDraft, setMessageDraft] = useState("");
   const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
+  const [createCategory, setCreateCategory] = useState("Vetura");
   const isAdmin = isFounderEmail(user?.email);
   const selectedListing = marketListings.find((item) => item.id === selectedId);
   const selected = selectedListing ?? initialListing;
@@ -488,6 +564,7 @@ export default function MarketplaceApp({
     }
     if (nextView === "create") {
       setEditingListing(null);
+      setCreateCategory("Vetura");
       selectedPreviewImages.forEach((url) => URL.revokeObjectURL(url));
       setSelectedPreviewImages([]);
     }
@@ -510,6 +587,7 @@ export default function MarketplaceApp({
 
   function editListing(listing: Listing) {
     setEditingListing(listing);
+    setCreateCategory(listing.category);
     setSelectedPreviewImages([]);
     setView("create");
     window.history.pushState(null, "", viewHref("create"));
@@ -1266,7 +1344,7 @@ export default function MarketplaceApp({
                 <label>Titull<input name="title" required placeholder="Mercedes GLE 350d 4Matic" defaultValue={editingListing?.title ?? ""} /></label>
                 <label>
                   Kategori
-                  <select name="category" defaultValue={editingListing?.category ?? "Vetura"}>
+                  <select name="category" value={createCategory} onChange={(event) => setCreateCategory(event.target.value)}>
                     {categories.map((item) => <option key={item}>{item}</option>)}
                   </select>
                 </label>
@@ -1276,16 +1354,35 @@ export default function MarketplaceApp({
                 </div>
                 <div className="range-pair">
                   <label>Viti<input name="year" type="number" min="1900" max="2035" required placeholder="2021" defaultValue={editingListing?.year ?? ""} /></label>
-                  <label>Kilometrazhi<input name="mileage" placeholder="68,000 km" defaultValue={editingListing?.specs.Kilometrazhi ?? ""} /></label>
                 </div>
-                <div className="range-pair">
-                  <label>Marka<input name="make" placeholder="Mercedes-Benz" defaultValue={editingListing?.specs.Marka ?? ""} /></label>
-                  <label>Modeli<input name="model" placeholder="GLE 350d" defaultValue={editingListing?.specs.Modeli ?? ""} /></label>
-                </div>
-                <div className="range-pair">
-                  <label>Karburanti<input name="fuel" placeholder="Diesel" defaultValue={editingListing?.specs.Karburanti ?? ""} /></label>
-                  <label>Transmisioni<input name="transmission" placeholder="Automatik" defaultValue={editingListing?.transmission ?? editingListing?.specs.Transmisioni ?? ""} /></label>
-                </div>
+                <section className="dynamic-fields" aria-label={`Te dhenat per ${createCategory}`}>
+                  <div className="dynamic-fields-head">
+                    <strong>Te dhenat per {createCategory}</strong>
+                    <span>Fushat ndryshojne sipas kategorise qe zgjedh.</span>
+                  </div>
+                  <div className="range-pair">
+                    {(categoryFields[createCategory] ?? categoryFields.Vetura).map((field) => (
+                      <label key={field.key}>
+                        {field.label}
+                        {field.options ? (
+                          <select name={`spec_${field.key}`} defaultValue={editingListing?.specs[field.key] ?? ""}>
+                            <option value="">Zgjedh</option>
+                            {field.options.map((option) => (
+                              <option key={option}>{option}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            name={`spec_${field.key}`}
+                            type={field.type ?? "text"}
+                            placeholder={field.placeholder}
+                            defaultValue={editingListing?.specs[field.key] ?? ""}
+                          />
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                </section>
                 <label>
                   Foto te shpalljes
                   <input name="images" type="file" accept="image/*" multiple onChange={previewSelectedImages} />

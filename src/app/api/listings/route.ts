@@ -23,6 +23,19 @@ function formValue(formData: FormData, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function collectSpecs(formData: FormData, year: number) {
+  const specs: Record<string, string> = { Viti: String(Math.round(year)) };
+
+  formData.forEach((value, key) => {
+    if (!key.startsWith("spec_") || typeof value !== "string") return;
+    const label = key.replace("spec_", "").trim();
+    const text = value.trim();
+    if (label && text) specs[label] = text;
+  });
+
+  return specs;
+}
+
 export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user) {
@@ -35,7 +48,6 @@ export async function POST(request: Request) {
   const price = Number(formValue(formData, "price"));
   const location = formValue(formData, "location");
   const year = Number(formValue(formData, "year"));
-  const transmission = formValue(formData, "transmission");
   const description = formValue(formData, "description");
 
   if (!title || !category || !location || !description || !Number.isFinite(price) || price <= 0 || !Number.isFinite(year)) {
@@ -49,18 +61,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Fotot nuk u ngarkuan." }, { status: 400 });
   }
 
-  const specs: Record<string, string> = {
-    Marka: formValue(formData, "make"),
-    Modeli: formValue(formData, "model"),
-    Viti: String(year),
-    Kilometrazhi: formValue(formData, "mileage"),
-    Karburanti: formValue(formData, "fuel"),
-    Transmisioni: transmission,
-  };
-
-  Object.keys(specs).forEach((key) => {
-    if (!specs[key]) delete specs[key];
-  });
+  const specs = collectSpecs(formData, year);
+  const transmission = specs.Transmisioni ?? null;
 
   const image = gallery[0] ?? null;
   const id = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 44)}-${crypto.randomUUID().slice(0, 8)}`;
@@ -73,7 +75,7 @@ export async function POST(request: Request) {
     price: Math.round(price),
     location,
     year: Math.round(year),
-    transmission: transmission || null,
+    transmission,
     image,
     galleryJson: JSON.stringify(gallery),
     specsJson: JSON.stringify(specs),
