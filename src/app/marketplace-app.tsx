@@ -884,18 +884,6 @@ export default function MarketplaceApp({
                   </a>
                 </div>
               </div>
-              <div className="deal-console">
-                <div className="console-head">
-                  <span>Secure Deal</span>
-                  <strong>EUR 42,900</strong>
-                </div>
-                <ol className="mini-timeline">
-                  <li className="done">Shitesi konfirmoi</li>
-                  <li className="done">Kontrata u gjenerua</li>
-                  <li className="current">Pagesa ne verifikim</li>
-                  <li>Dorezimi</li>
-                </ol>
-              </div>
             </div>
             <div className="stats-grid">
               <div>
