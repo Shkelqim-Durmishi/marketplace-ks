@@ -106,58 +106,50 @@ const homeCategoryCards = [
   {
     name: "Vetura",
     label: "Vetura",
-    count: "12,543 shpallje",
-    icon: "Auto",
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 12543,
+    icon: "car",
   },
   {
     name: "Banesa",
     label: "Banesa",
-    count: "3,256 shpallje",
-    icon: "Home",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 3256,
+    icon: "home",
   },
   {
     name: "Motocikleta",
     label: "Moto",
-    count: "2,145 shpallje",
-    icon: "Moto",
-    image: "https://images.unsplash.com/photo-1558981852-426c6c22a060?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 2145,
+    icon: "moto",
   },
   {
     name: "Makineri",
     label: "Makineri",
-    count: "1,843 shpallje",
-    icon: "Mach",
-    image: "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 1843,
+    icon: "machine",
   },
   {
     name: "Biznese",
     label: "Biznese",
-    count: "980 shpallje",
-    icon: "Biz",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 980,
+    icon: "briefcase",
   },
   {
     name: "Elektronike",
     label: "Elektronike",
-    count: "1,209 shpallje",
-    icon: "Tech",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 1209,
+    icon: "phone",
   },
   {
     name: "Industriale",
     label: "Industriale",
-    count: "1,120 shpallje",
-    icon: "Ind",
-    image: "https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 1120,
+    icon: "factory",
   },
   {
     name: "",
     label: "Tjeter",
-    count: "1,504 shpallje",
-    icon: "More",
-    image: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?auto=format&fit=crop&w=600&q=80",
+    fallbackCount: 1504,
+    icon: "more",
   },
 ];
 
@@ -376,6 +368,49 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+function compactNumber(value: number) {
+  if (value >= 1000000) return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 }).format(value / 1000000)}M+`;
+  if (value >= 1000) return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 }).format(value / 1000)}k+`;
+  return new Intl.NumberFormat("de-DE").format(value);
+}
+
+function compactMoney(value: number) {
+  if (value >= 1000000) return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(value / 1000000)}M€`;
+  if (value >= 1000) return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(value / 1000)}k€`;
+  return money(value);
+}
+
+function UiIcon({ name }: { name: string }) {
+  const common = {
+    width: 24,
+    height: 24,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+
+  if (name === "car") return <svg {...common}><path d="M5 13 7 7h10l2 6" /><path d="M4 13h16v5H4z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>;
+  if (name === "home") return <svg {...common}><path d="m3 11 9-8 9 8" /><path d="M5 10v10h14V10" /><path d="M10 20v-6h4v6" /></svg>;
+  if (name === "moto") return <svg {...common}><circle cx="6" cy="17" r="3" /><circle cx="18" cy="17" r="3" /><path d="M8 17h5l3-7h3" /><path d="m10 10 2 7" /><path d="M8 9h4" /></svg>;
+  if (name === "machine") return <svg {...common}><path d="M4 18h16" /><path d="M5 18V8h5v10" /><path d="M10 12h7l2 6" /><path d="M14 12V8h3" /></svg>;
+  if (name === "briefcase") return <svg {...common}><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5h8v2" /><path d="M3 13h18" /></svg>;
+  if (name === "phone") return <svg {...common}><rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" /></svg>;
+  if (name === "factory") return <svg {...common}><path d="M3 21V9l6 4V9l6 4V7h6v14z" /><path d="M7 17h2" /><path d="M12 17h2" /><path d="M17 17h2" /></svg>;
+  if (name === "shield") return <svg {...common}><path d="M12 3 5 6v6c0 4.4 2.8 7.6 7 9 4.2-1.4 7-4.6 7-9V6z" /><path d="m9 12 2 2 4-5" /></svg>;
+  if (name === "search") return <svg {...common}><circle cx="11" cy="11" r="7" /><path d="m16 16 4 4" /></svg>;
+  if (name === "pin") return <svg {...common}><path d="M12 21s7-5.4 7-12a7 7 0 1 0-14 0c0 6.6 7 12 7 12Z" /><circle cx="12" cy="9" r="2" /></svg>;
+  if (name === "clock") return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
+  if (name === "users") return <svg {...common}><path d="M16 21a6 6 0 0 0-12 0" /><circle cx="10" cy="8" r="4" /><path d="M22 21a5 5 0 0 0-4-4.9" /><path d="M17 4.4a4 4 0 0 1 0 7.2" /></svg>;
+  if (name === "bag") return <svg {...common}><path d="M6 8h12l-1 13H7z" /><path d="M9 8a3 3 0 0 1 6 0" /></svg>;
+  if (name === "money") return <svg {...common}><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="12" cy="12" r="3" /><path d="M6 9v.01" /><path d="M18 15v.01" /></svg>;
+  if (name === "more") return <svg {...common}><rect x="4" y="4" width="6" height="6" /><rect x="14" y="4" width="6" height="6" /><rect x="4" y="14" width="6" height="6" /><rect x="14" y="14" width="6" height="6" /></svg>;
+  return <svg {...common}><path d="m5 12 4 4L19 6" /></svg>;
+}
+
 type MarketplaceAppProps = {
   initialView: View;
   initialSelectedId?: string;
@@ -461,6 +496,23 @@ export default function MarketplaceApp({
       .filter((item) => `${item.title} ${item.location} ${item.category}`.toLowerCase().includes(query.toLowerCase()))
       .sort((a, b) => b.score - a.score);
   }, [category, marketListings, query]);
+
+  const homeStats = useMemo(() => {
+    const activeListings = marketListings.filter((item) => item.status !== "SOLD");
+    const listedValue = activeListings.reduce((total, item) => total + (Number.isFinite(item.price) ? item.price : 0), 0);
+    const verifiedSellers = new Set(activeListings.filter((item) => item.verified).map((item) => item.seller.name)).size;
+    const categoryCounts = activeListings.reduce<Record<string, number>>((totals, item) => {
+      totals[item.category] = (totals[item.category] ?? 0) + 1;
+      return totals;
+    }, {});
+
+    return {
+      activeListings: activeListings.length,
+      listedValue,
+      verifiedSellers,
+      categoryCounts,
+    };
+  }, [marketListings]);
 
   useEffect(() => {
     const syncFromHash = () => {
@@ -995,16 +1047,16 @@ export default function MarketplaceApp({
             <div className="home-hero">
               <div className="home-hero-copy">
                 <h1>
-                  Miresevini ne
-                  <span>Marketplace-ks</span>
+                  Kerko, filtro dhe negocio
+                  <span>ne menyre te sigurt.</span>
                 </h1>
                 <p className="hero-text">
-                  Platforma me e sigurt per vetura, prona, makineri, biznese dhe asete te vlefshme.
+                  Platforma me e besueshme per vetura, prona, makineri, biznese dhe me shume.
                 </p>
                 <div className="hero-trust-row">
-                  <span>18,600+ Shpallje aktive</span>
-                  <span>1,240 Shites te verifikuar</span>
-                  <span>24/7 AI Monitoring</span>
+                  <span><UiIcon name="bag" />{compactNumber(homeStats.activeListings || marketListings.length)} shpallje aktive</span>
+                  <span><UiIcon name="shield" />{compactNumber(homeStats.verifiedSellers)} shites te verifikuar</span>
+                  <span><UiIcon name="clock" />24/7 AI Monitoring</span>
                 </div>
               </div>
               <form
@@ -1015,11 +1067,10 @@ export default function MarketplaceApp({
                 }}
               >
                 <label>
-                  <span>Kerko</span>
+                  <span><UiIcon name="search" /></span>
                   <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Kerko produkte, kategori, marka..." />
                 </label>
                 <label>
-                  <span>Kategoria</span>
                   <select value={category} onChange={(event) => setCategory(event.target.value)}>
                     <option value="">Te gjitha kategorite</option>
                     {categories.map((item) => (
@@ -1028,49 +1079,16 @@ export default function MarketplaceApp({
                   </select>
                 </label>
                 <label>
-                  <span>Lokacioni</span>
+                  <span><UiIcon name="pin" /></span>
                   <input placeholder="Lokacioni" />
                 </label>
                 <label>
-                  <span>Cmimi</span>
                   <input placeholder="Cmimi" />
                 </label>
-                <button className="primary" type="submit">Gjej tani</button>
+                <button className="primary" type="submit"><UiIcon name="search" />Gjej tani</button>
               </form>
             </div>
-            <div className="home-stats-grid">
-              <div className="home-stat-card">
-                <span className="home-stat-icon">Bag</span>
-                <strong>18.6k+</strong>
-                <small>Shpallje aktive</small>
-                <em>Sot</em>
-              </div>
-              <div className="home-stat-card blue">
-                <span className="home-stat-icon">Cash</span>
-                <strong>284M€</strong>
-                <small>Vlere e listuar</small>
-                <em>Totali</em>
-              </div>
-              <div className="home-stat-card purple">
-                <span className="home-stat-icon">User</span>
-                <strong>1,240</strong>
-                <small>Shites te verifikuar</small>
-                <em>Te gjithe</em>
-              </div>
-              <div className="home-stat-card orange">
-                <span className="home-stat-icon">AI</span>
-                <strong>24/7</strong>
-                <small>AI Fraud Monitoring</small>
-                <em>Sistem aktiv</em>
-              </div>
-            </div>
             <section className="home-section">
-              <div className="section-title">
-                <h2>Kategori kryesore</h2>
-                <a className="text-button nav-action" href={viewHref("market")} onClick={() => go("market")}>
-                  Shiko te gjitha
-                </a>
-              </div>
               <div className="home-category-grid">
                 {homeCategoryCards.map((item) => (
                   <a
@@ -1081,11 +1099,10 @@ export default function MarketplaceApp({
                       setCategory(item.name);
                       go("market");
                     }}
-                    style={{ backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, .15), rgba(15, 23, 42, .86)), url('${item.image}')` }}
                   >
-                    <span>{item.icon}</span>
+                    <span><UiIcon name={item.icon} /></span>
                     <strong>{item.label}</strong>
-                    <small>{item.count}</small>
+                    <small>{new Intl.NumberFormat("de-DE").format(homeStats.categoryCounts[item.name] ?? item.fallbackCount)} shpallje</small>
                   </a>
                 ))}
               </div>
@@ -1099,7 +1116,7 @@ export default function MarketplaceApp({
                   </a>
                 </div>
                 <div className="home-listing-row">
-                  {marketListings.slice(0, 4).map((item) => (
+                  {marketListings.slice(0, 8).map((item) => (
                     <a
                       className="home-listing-card"
                       key={item.id}
@@ -1111,27 +1128,60 @@ export default function MarketplaceApp({
                     >
                       <span className="home-listing-image" style={{ backgroundImage: `url('${item.image}')` }}>
                         <em>Verifikuar</em>
-                        <span className="save-pill">Save</span>
+                        <span className="save-pill" aria-hidden="true">♡</span>
                       </span>
                       <strong>{item.title}</strong>
-                      <small>{item.location} - {item.year}</small>
+                      <small>{item.category} · {item.year}</small>
+                      <small className="listing-location"><UiIcon name="pin" />{item.location}</small>
                       <span>{money(item.price)}</span>
                     </a>
                   ))}
                 </div>
+                <button className="secondary home-more" type="button" onClick={() => go("market")}>
+                  Shfaq me shume
+                </button>
               </div>
-              <aside className="seller-verify-card">
-                <span className="verify-shield">OK</span>
-                <h2>Behu shites i verifikuar</h2>
-                <p>Rrit besueshmerine dhe shiko shpalljet e tua me lart.</p>
-                <ul>
-                  <li>Badge te verifikuar</li>
-                  <li>Me shume shikime</li>
-                  <li>Mesazhe me te sigurta</li>
-                </ul>
-                <a className="primary nav-action" href={viewHref("auth")} onClick={() => go("auth")}>
-                  Verifiko profilin
-                </a>
+              <aside className="home-side-stack">
+                <div className="seller-verify-card">
+                  <span className="verify-shield"><UiIcon name="shield" /></span>
+                  <h2>Behu shites i verifikuar</h2>
+                  <p>Rrit besueshmerine dhe shiko shpalljet e tua me lart.</p>
+                  <ul>
+                    <li>Badge i verifikuar</li>
+                    <li>Me shume shikime</li>
+                    <li>Transaksione me te sigurta</li>
+                  </ul>
+                  <a className="primary nav-action" href={viewHref("auth")} onClick={() => go("auth")}>
+                    Verifiko profilin <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+                <div className="platform-stats-card">
+                  <div className="section-title compact">
+                    <h2>Statistikat e platformes</h2>
+                  </div>
+                  <div className="home-stats-grid">
+                    <div className="home-stat-card">
+                      <span className="home-stat-icon"><UiIcon name="clock" /></span>
+                      <strong>{compactNumber(homeStats.activeListings || marketListings.length)}</strong>
+                      <small>Shpallje aktive</small>
+                    </div>
+                    <div className="home-stat-card purple">
+                      <span className="home-stat-icon"><UiIcon name="money" /></span>
+                      <strong>{compactMoney(homeStats.listedValue)}</strong>
+                      <small>Vlere e listuar</small>
+                    </div>
+                    <div className="home-stat-card blue">
+                      <span className="home-stat-icon"><UiIcon name="users" /></span>
+                      <strong>{compactNumber(homeStats.verifiedSellers)}</strong>
+                      <small>Shites te verifikuar</small>
+                    </div>
+                    <div className="home-stat-card orange">
+                      <span className="home-stat-icon"><UiIcon name="shield" /></span>
+                      <strong>24/7</strong>
+                      <small>AI Monitoring</small>
+                    </div>
+                  </div>
+                </div>
               </aside>
             </section>
           </section>

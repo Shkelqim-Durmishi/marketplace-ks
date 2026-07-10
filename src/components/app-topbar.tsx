@@ -45,6 +45,12 @@ export function AppTopbar({
         <span aria-hidden="true" />
       </button>
       <div className="search-wrap">
+        <span className="search-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m16 16 4 4" />
+          </svg>
+        </span>
         <label htmlFor="smartSearch">Kerko me AI</label>
         <input
           id="smartSearch"
@@ -62,8 +68,11 @@ export function AppTopbar({
         type="button"
         onClick={() => notify("5 njoftime demo.")}
         aria-label="Njoftimet"
-      >
-        !
+        >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M12 5v8" />
+          <path d="M12 18h.01" />
+        </svg>
       </button>
       <a
         className="primary small nav-action"
@@ -73,7 +82,7 @@ export function AppTopbar({
           go("create");
         }}
       >
-        + Shto Shpallje
+        <span aria-hidden="true">+</span> Shto shpallje
       </a>
       <button
         className="theme-toggle"
@@ -92,6 +101,9 @@ export function AppTopbar({
               <strong>{user.name}</strong>
               <small>{user.role}</small>
             </span>
+            <svg className="chip-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
           </button>
           {accountMenuOpen ? (
             <div className="account-menu">
