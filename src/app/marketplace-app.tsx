@@ -6,7 +6,7 @@ import { AppTopbar } from "@/components/app-topbar";
 import { ListingCard } from "@/components/listing-card";
 import { isFounderEmail } from "@/lib/admin";
 
-export type View = "home" | "market" | "auth" | "details" | "create" | "mine" | "messages" | "admin";
+export type View = "home" | "market" | "favorites" | "auth" | "details" | "create" | "mine" | "messages" | "admin";
 
 export type User = {
   id: string;
@@ -353,7 +353,7 @@ const listings: Listing[] = [
   },
 ];
 
-const views: View[] = ["home", "market", "auth", "details", "create", "mine", "messages", "admin"];
+const views: View[] = ["home", "market", "favorites", "auth", "details", "create", "mine", "messages", "admin"];
 
 function money(value: number) {
   return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
@@ -482,6 +482,7 @@ export default function MarketplaceApp({
   const [messageDraft, setMessageDraft] = useState("");
   const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
   const [createCategory, setCreateCategory] = useState("Vetura");
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set());
   const isAdmin = isFounderEmail(user?.email);
   const selectedListing = marketListings.find((item) => item.id === selectedId);
   const selected = selectedListing ?? initialListing;
@@ -496,6 +497,12 @@ export default function MarketplaceApp({
       .filter((item) => `${item.title} ${item.location} ${item.category}`.toLowerCase().includes(query.toLowerCase()))
       .sort((a, b) => b.score - a.score);
   }, [category, marketListings, query]);
+
+  const favoriteListings = useMemo(() => {
+    return marketListings.filter((item) => favoriteIds.has(item.id));
+  }, [favoriteIds, marketListings]);
+
+  const visibleMarketListings = view === "favorites" ? favoriteListings : filteredListings;
 
   const homeStats = useMemo(() => {
     const activeListings = marketListings.filter((item) => item.status !== "SOLD");
@@ -571,6 +578,23 @@ export default function MarketplaceApp({
       })
       .catch(() => undefined);
   }, [initialSelectedId]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      try {
+        const stored = window.localStorage.getItem(`marketplace-favorites:${user.email}`);
+        setFavoriteIds(new Set(stored ? JSON.parse(stored) : []));
+      } catch {
+        setFavoriteIds(new Set());
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [user]);
 
   useEffect(() => {
     if (view !== "mine" || !user) {
@@ -653,7 +677,7 @@ export default function MarketplaceApp({
 
   function go(nextView: View) {
     setSidebarOpen(false);
-    if (["create", "mine", "messages"].includes(nextView) && !user) {
+    if (["create", "mine", "messages", "favorites"].includes(nextView) && !user) {
       notify("Se pari duhet te kycesh.");
       setView("auth");
       window.history.pushState(null, "", viewHref("auth"));
@@ -681,6 +705,26 @@ export default function MarketplaceApp({
     }
     setView(nextView);
     window.history.pushState(null, "", viewHref(nextView));
+  }
+
+  function toggleFavorite(listing: Listing) {
+    if (!user) {
+      notify("Kycu per favorite.");
+      return;
+    }
+
+    setFavoriteIds((current) => {
+      const next = new Set(current);
+      const wasSaved = next.has(listing.id);
+      if (wasSaved) {
+        next.delete(listing.id);
+      } else {
+        next.add(listing.id);
+      }
+      window.localStorage.setItem(`marketplace-favorites:${user.email}`, JSON.stringify(Array.from(next)));
+      notify(wasSaved ? "U hoq nga te preferuarat." : "U shtua te preferuarat.");
+      return next;
+    });
   }
 
   function switchAuthMode(mode: AuthMode) {
@@ -1002,8 +1046,11 @@ export default function MarketplaceApp({
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
+    setFavoriteIds(new Set());
     setAccountMenuOpen(false);
     setAuthMessage("");
+    setView("auth");
+    window.history.pushState(null, "", viewHref("auth"));
     notify("Dole nga llogaria.");
   }
 
@@ -1022,6 +1069,8 @@ export default function MarketplaceApp({
         sidebarOpen={sidebarOpen}
         closeSidebar={() => setSidebarOpen(false)}
         isAdmin={isAdmin}
+        isLoggedIn={Boolean(user)}
+        logout={logout}
       />
 
       <main>
@@ -1117,24 +1166,52 @@ export default function MarketplaceApp({
                 </div>
                 <div className="home-listing-row">
                   {marketListings.slice(0, 8).map((item) => (
-                    <a
+                    <article
                       className="home-listing-card"
                       key={item.id}
-                      href={viewHref("details", item.id)}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        openListing(item);
-                      }}
                     >
-                      <span className="home-listing-image" style={{ backgroundImage: `url('${item.image}')` }}>
+                      <div
+                        className="home-listing-image"
+                        style={{ backgroundImage: `url('${item.image}')` }}
+                      >
+                        <a
+                          className="home-listing-image-link"
+                          href={viewHref("details", item.id)}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            openListing(item);
+                          }}
+                          aria-label={`Shiko ${item.title}`}
+                        />
                         <em>Verifikuar</em>
-                        <span className="save-pill" aria-hidden="true">&hearts;</span>
-                      </span>
-                      <strong>{item.title}</strong>
+                        <button
+                          className={`save-pill ${favoriteIds.has(item.id) ? "active" : ""}`}
+                          type="button"
+                          aria-label={favoriteIds.has(item.id) ? "Hiqe nga te preferuarat" : "Shto te preferuarat"}
+                          aria-pressed={favoriteIds.has(item.id)}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            toggleFavorite(item);
+                          }}
+                        >
+                          &hearts;
+                        </button>
+                      </div>
+                      <a
+                        className="home-listing-title"
+                        href={viewHref("details", item.id)}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          openListing(item);
+                        }}
+                      >
+                        {item.title}
+                      </a>
                       <small>{item.category} &middot; {item.year}</small>
                       <small className="listing-location"><UiIcon name="pin" />{item.location}</small>
                       <span>{money(item.price)}</span>
-                    </a>
+                    </article>
                   ))}
                 </div>
                 <button className="secondary home-more" type="button" onClick={() => go("market")}>
@@ -1195,12 +1272,12 @@ export default function MarketplaceApp({
           </section>
         )}
 
-        {view === "market" && (
+        {(view === "market" || view === "favorites") && (
           <section className="view active">
             <div className="page-head">
               <div>
-                <p className="eyebrow">Marketplace</p>
-                <h1>Kerko, filtro dhe negocio ne menyre te sigurt.</h1>
+                <p className="eyebrow">{view === "favorites" ? "Te preferuarat" : "Marketplace"}</p>
+                <h1>{view === "favorites" ? "Shpalljet qe i ke ruajtur." : "Kerko, filtro dhe negocio ne menyre te sigurt."}</h1>
               </div>
               <a className="primary nav-action" href={viewHref("create")} onClick={() => go("create")}>
                 Krijo shpallje
@@ -1228,7 +1305,7 @@ export default function MarketplaceApp({
               </form>
               <div>
                 <div className="results-bar">
-                  <span>{filteredListings.length} rezultate</span>
+                  <span>{visibleMarketListings.length} rezultate</span>
                   <div className="segmented">
                     <button className="active" type="button">
                       AI
@@ -1238,7 +1315,7 @@ export default function MarketplaceApp({
                   </div>
                 </div>
                 <div className="listing-grid">
-                  {filteredListings.map((item) => (
+                  {visibleMarketListings.map((item) => (
                     <ListingCard
                       key={item.id}
                       item={item}
@@ -1247,9 +1324,18 @@ export default function MarketplaceApp({
                       viewHref={viewHref}
                       openListing={openListing}
                       notify={notify}
+                      isFavorite={favoriteIds.has(item.id)}
+                      toggleFavorite={toggleFavorite}
                     />
                   ))}
                 </div>
+                {view === "favorites" && !visibleMarketListings.length ? (
+                  <div className="empty-state">
+                    <h2>Nuk ke ende shpallje te preferuara.</h2>
+                    <p>Kliko zemren te shpalljet qe deshiron ti ruash ketu.</p>
+                    <button className="primary" type="button" onClick={() => go("market")}>Shfleto marketplace</button>
+                  </div>
+                ) : null}
               </div>
             </div>
           </section>
@@ -1262,8 +1348,14 @@ export default function MarketplaceApp({
                 Kthehu te Marketplace
               </a>
               <div className="detail-actions">
-                <button className="secondary" type="button" onClick={() => notify(user ? "U ruajt ne favorite." : "Kycu per favorite.")}>
-                  Ruaj
+                <button
+                  className={`secondary favorite-action ${favoriteIds.has(selected.id) ? "active" : ""}`}
+                  type="button"
+                  onClick={() => toggleFavorite(selected)}
+                  aria-pressed={favoriteIds.has(selected.id)}
+                >
+                  <span aria-hidden="true">&hearts;</span>
+                  {favoriteIds.has(selected.id) ? "U ruajt" : "Ruaj"}
                 </button>
                 <button className="secondary" type="button" disabled={!selectedIsReady} onClick={() => startConversation(selected)}>
                   Dergo mesazh

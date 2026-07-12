@@ -7,6 +7,8 @@ type AppSidebarProps = {
   sidebarOpen: boolean;
   closeSidebar: () => void;
   isAdmin: boolean;
+  isLoggedIn: boolean;
+  logout: () => void;
 };
 
 const navItems: Array<[View, string, string]> = [
@@ -15,7 +17,7 @@ const navItems: Array<[View, string, string]> = [
   ["create", "Krijo shpallje", "plus-square"],
   ["mine", "Shpalljet e mia", "file"],
   ["messages", "Mesazhet", "mail"],
-  ["market", "Te preferuarat", "heart"],
+  ["favorites", "Te preferuarat", "heart"],
   ["messages", "Njoftimet", "bell"],
   ["auth", "Profili", "user"],
   ["admin", "Admin", "settings"],
@@ -67,14 +69,18 @@ function SidebarIcon({ name }: { name: string }) {
   return <svg {...common}><circle cx="12" cy="12" r="3" /><path d="M12 2v3" /><path d="M12 19v3" /><path d="m4.93 4.93 2.12 2.12" /><path d="m16.95 16.95 2.12 2.12" /><path d="M2 12h3" /><path d="M19 12h3" /><path d="m4.93 19.07 2.12-2.12" /><path d="m16.95 7.05 2.12-2.12" /></svg>;
 }
 
-export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar, isAdmin }: AppSidebarProps) {
+export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar, isAdmin, isLoggedIn, logout }: AppSidebarProps) {
   function navigate(nextView: View) {
     closeSidebar();
     go(nextView);
   }
 
-  const visibleNavItems = navItems.filter(([id]) => id !== "admin" || isAdmin);
-  const activeLabels = new Set(["Ballina", "Marketplace", "Krijo shpallje", "Shpalljet e mia", "Mesazhet", "Profili", "Admin"]);
+  const visibleNavItems = navItems.filter(([id, label]) => {
+    if (id === "admin") return isAdmin;
+    if (label === "Dalja") return isLoggedIn;
+    return true;
+  });
+  const activeLabels = new Set(["Ballina", "Marketplace", "Krijo shpallje", "Shpalljet e mia", "Mesazhet", "Te preferuarat", "Profili", "Admin"]);
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} aria-label="Navigimi kryesor">
@@ -100,6 +106,11 @@ export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar, isAd
             href={viewHref(id)}
             onClick={(event) => {
               event.preventDefault();
+              if (label === "Dalja") {
+                closeSidebar();
+                logout();
+                return;
+              }
               navigate(id);
             }}
           >

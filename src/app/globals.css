@@ -549,10 +549,10 @@ input, select, textarea {
   border-radius: 12px;
   box-shadow: 0 24px 70px rgba(5, 14, 22, .24);
   display: grid;
-  gap: 9px;
-  grid-template-columns: minmax(320px, 1.75fr) minmax(190px, 1fr) minmax(170px, .9fr) minmax(150px, .85fr) 142px;
+  gap: 10px;
+  grid-template-columns: minmax(340px, 1.85fr) minmax(210px, 1.05fr) minmax(180px, .9fr) minmax(160px, .82fr) 150px;
   width: min(100%, 1110px);
-  padding: 12px;
+  padding: 13px;
 }
 
 .hero-search-panel label {
@@ -561,8 +561,8 @@ input, select, textarea {
 }
 
 .hero-search-panel label > span {
-  color: #667085;
-  left: 14px;
+  color: #64748b;
+  left: 16px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -579,18 +579,20 @@ input, select, textarea {
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  color: #17202a;
-  min-height: 45px;
-  padding: 0 14px;
+  color: #172033;
+  font-size: 14px;
+  font-weight: 650;
+  min-height: 48px;
+  padding: 0 16px;
   user-select: text;
 }
 
 .hero-search-panel label:has(> span) input {
-  padding-left: 42px;
+  padding-left: 46px;
 }
 
 .hero-search-panel button {
-  min-height: 45px;
+  min-height: 48px;
   display: inline-flex;
   gap: 8px;
   align-items: center;
@@ -761,6 +763,13 @@ input, select, textarea {
   display: flex;
   justify-content: space-between;
   padding: 10px;
+  position: relative;
+}
+
+.home-listing-image-link {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 .home-listing-image em,
@@ -779,11 +788,12 @@ input, select, textarea {
   background: #14b8a6;
   color: #fff;
   text-transform: uppercase;
+  z-index: 1;
 }
 
 .home-listing-image .save-pill {
   background: rgba(255, 255, 255, .92);
-  color: #17202a;
+  color: transparent;
   display: grid;
   place-items: center;
   min-width: 28px;
@@ -792,18 +802,43 @@ input, select, textarea {
   padding: 0;
   font-size: 19px;
   line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.home-listing-image .save-pill::before {
+  content: "♡";
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  text-shadow: 0 1px 8px rgba(15, 23, 42, .7);
+}
+
+.home-listing-image .save-pill.active {
+  background: #fff;
+}
+
+.home-listing-image .save-pill.active::before {
+  content: "♥";
+  color: #0f766e;
+  text-shadow: none;
 }
 
 .home-listing-card strong,
+.home-listing-title,
 .home-listing-card small,
 .home-listing-card > span:not(.home-listing-image) {
   margin: 0 12px;
 }
 
-.home-listing-card strong {
+.home-listing-card strong,
+.home-listing-title {
+  color: var(--text);
   font-size: 14px;
+  font-weight: 900;
   line-height: 1.25;
   min-height: 36px;
+  text-decoration: none;
 }
 
 .home-listing-card small {
@@ -952,7 +987,7 @@ input, select, textarea {
   border-radius: 30px;
   box-shadow: 0 22px 42px rgba(15, 23, 42, .26);
   height: 224px;
-  padding: 14px 9px;
+  padding: 12px 8px;
   transform: rotate(-9deg) translate(8px, 24px);
   width: 108px;
 }
@@ -968,30 +1003,33 @@ input, select, textarea {
 
 .phone-card-image {
   background:
-    linear-gradient(0deg, rgba(15, 23, 42, .2), rgba(15, 23, 42, .2)),
+    linear-gradient(0deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .08)),
     url("https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=400&q=80") center/cover;
   border-radius: 10px;
   height: 62px;
 }
 
 .phone-row {
-  background: #e8f5f2;
+  background: #f8fafc;
   border-radius: 999px;
-  height: 10px;
+  height: 11px;
   margin: 12px 0;
 }
 
 .phone-grid {
+  background: #fff;
+  border-radius: 16px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
+  padding: 9px;
 }
 
 .phone-grid i {
-  background: #eef7f6;
+  background: #f1f5f9;
   border-radius: 10px;
   display: block;
-  height: 34px;
+  height: 30px;
 }
 
 .insight-panel, .filters, .editor-panel, .preview-panel, .chat-window, .threads, .risk-table {
@@ -1059,6 +1097,23 @@ input, select, textarea {
 .listing-title:hover { color: var(--primary-2); }
 .listing-price { color: var(--text); font-size: 22px; font-weight: 900; }
 .listing-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.favorite-action {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+.favorite-action span {
+  color: #94a3b8;
+  font-size: 17px;
+  line-height: 1;
+}
+.favorite-action.active {
+  border-color: color-mix(in srgb, var(--primary), transparent 35%);
+  color: var(--primary-2);
+}
+.favorite-action.active span {
+  color: var(--primary);
+}
 .badge, .pill {
   display: inline-flex;
   width: fit-content;

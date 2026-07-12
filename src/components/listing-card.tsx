@@ -7,9 +7,11 @@ type ListingCardProps = {
   viewHref: (view: View, id?: string) => string;
   openListing: (listing: Listing) => void;
   notify: (message: string) => void;
+  isFavorite: boolean;
+  toggleFavorite: (listing: Listing) => void;
 };
 
-export function ListingCard({ item, userExists, money, viewHref, openListing, notify }: ListingCardProps) {
+export function ListingCard({ item, userExists, money, viewHref, openListing, notify, isFavorite, toggleFavorite }: ListingCardProps) {
   return (
     <article className="listing-card">
       <a
@@ -35,8 +37,20 @@ export function ListingCard({ item, userExists, money, viewHref, openListing, no
           <a className="secondary small nav-action" href={viewHref("details", item.id)} onClick={() => openListing(item)}>
             Shiko detajet
           </a>
-          <button className="secondary small" type="button" onClick={() => notify(userExists ? "U ruajt ne favorite." : "Kycu per favorite.")}>
-            Ruaj
+          <button
+            className={`secondary small favorite-action ${isFavorite ? "active" : ""}`}
+            type="button"
+            aria-pressed={isFavorite}
+            onClick={() => {
+              if (!userExists) {
+                notify("Kycu per favorite.");
+                return;
+              }
+              toggleFavorite(item);
+            }}
+          >
+            <span aria-hidden="true">&hearts;</span>
+            {isFavorite ? "U ruajt" : "Ruaj"}
           </button>
         </div>
       </div>
