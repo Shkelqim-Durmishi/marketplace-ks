@@ -550,8 +550,9 @@ input, select, textarea {
   box-shadow: 0 24px 70px rgba(5, 14, 22, .24);
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(340px, 1.85fr) minmax(210px, 1.05fr) minmax(180px, .9fr) minmax(160px, .82fr) 150px;
-  width: min(100%, 1110px);
+  grid-template-columns: minmax(360px, 2.25fr) minmax(210px, 1.18fr) minmax(180px, 1fr) minmax(160px, .9fr) 150px;
+  width: 100%;
+  max-width: none;
   padding: 13px;
 }
 
