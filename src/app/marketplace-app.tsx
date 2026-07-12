@@ -1096,7 +1096,7 @@ export default function MarketplaceApp({
             <div className="home-hero">
               <div className="home-hero-copy">
                 <h1>
-                  Kerko, filtro dhe negocio
+                  Kerko, filtro dhe negocio{" "}
                   <span>ne menyre te sigurt.</span>
                 </h1>
                 <p className="hero-text">
