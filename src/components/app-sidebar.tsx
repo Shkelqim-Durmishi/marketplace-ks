@@ -18,7 +18,6 @@ const navItems: Array<[View, string, string]> = [
   ["market", "Te preferuarat", "heart"],
   ["messages", "Njoftimet", "bell"],
   ["auth", "Profili", "user"],
-  ["auth", "Cilesimet", "settings"],
   ["admin", "Admin", "settings"],
   ["auth", "Dalja", "logout"],
 ];
