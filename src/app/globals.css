@@ -550,10 +550,10 @@ input, select, textarea {
   box-shadow: 0 24px 70px rgba(5, 14, 22, .24);
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(360px, 2.25fr) minmax(210px, 1.18fr) minmax(180px, 1fr) minmax(160px, .9fr) 150px;
-  width: 100%;
-  max-width: none;
-  padding: 13px;
+  grid-template-columns: minmax(350px, 1.72fr) minmax(210px, 1fr) minmax(180px, .88fr) minmax(170px, .84fr) 142px;
+  justify-self: start;
+  width: min(100%, 1112px);
+  padding: 12px;
 }
 
 .hero-search-panel label {
@@ -579,27 +579,29 @@ input, select, textarea {
 .hero-search-panel select {
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 9px;
   color: #172033;
-  font-size: 14px;
-  font-weight: 650;
-  min-height: 48px;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 46px;
   padding: 0 16px;
   user-select: text;
+  width: 100%;
 }
 
 .hero-search-panel label:has(> span) input {
-  padding-left: 46px;
+  padding-left: 44px;
 }
 
 .hero-search-panel button {
-  min-height: 48px;
+  min-height: 46px;
   display: inline-flex;
   gap: 8px;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 9px;
   font-weight: 950;
+  width: 100%;
 }
 
 .hero-search-panel button svg {

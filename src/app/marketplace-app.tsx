@@ -1132,6 +1132,7 @@ export default function MarketplaceApp({
                   <input placeholder="Lokacioni" />
                 </label>
                 <label>
+                  <span><UiIcon name="money" /></span>
                   <input placeholder="Cmimi" />
                 </label>
                 <button className="primary" type="submit"><UiIcon name="search" />Gjej tani</button>
