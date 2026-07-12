@@ -1128,10 +1128,10 @@ export default function MarketplaceApp({
                     >
                       <span className="home-listing-image" style={{ backgroundImage: `url('${item.image}')` }}>
                         <em>Verifikuar</em>
-                        <span className="save-pill" aria-hidden="true">♡</span>
+                        <span className="save-pill" aria-hidden="true">&hearts;</span>
                       </span>
                       <strong>{item.title}</strong>
-                      <small>{item.category} · {item.year}</small>
+                      <small>{item.category} &middot; {item.year}</small>
                       <small className="listing-location"><UiIcon name="pin" />{item.location}</small>
                       <span>{money(item.price)}</span>
                     </a>
@@ -1152,34 +1152,42 @@ export default function MarketplaceApp({
                     <li>Transaksione me te sigurta</li>
                   </ul>
                   <a className="primary nav-action" href={viewHref("auth")} onClick={() => go("auth")}>
-                    Verifiko profilin <span aria-hidden="true">→</span>
+                    Verifiko profilin <span aria-hidden="true">-&gt;</span>
                   </a>
                 </div>
                 <div className="platform-stats-card">
-                  <div className="section-title compact">
-                    <h2>Statistikat e platformes</h2>
+                  <div>
+                    <div className="section-title compact">
+                      <h2>Statistikat e platformes</h2>
+                    </div>
+                    <div className="home-stats-grid">
+                      <div className="home-stat-card">
+                        <span className="home-stat-icon"><UiIcon name="clock" /></span>
+                        <strong>{compactNumber(homeStats.activeListings || marketListings.length)}</strong>
+                        <small>Shpallje aktive</small>
+                      </div>
+                      <div className="home-stat-card purple">
+                        <span className="home-stat-icon"><UiIcon name="money" /></span>
+                        <strong>{compactMoney(homeStats.listedValue)}</strong>
+                        <small>Vlere e listuar</small>
+                      </div>
+                      <div className="home-stat-card blue">
+                        <span className="home-stat-icon"><UiIcon name="users" /></span>
+                        <strong>{compactNumber(homeStats.verifiedSellers)}</strong>
+                        <small>Shites te verifikuar</small>
+                      </div>
+                      <div className="home-stat-card orange">
+                        <span className="home-stat-icon"><UiIcon name="shield" /></span>
+                        <strong>24/7</strong>
+                        <small>AI Monitoring</small>
+                      </div>
+                    </div>
                   </div>
-                  <div className="home-stats-grid">
-                    <div className="home-stat-card">
-                      <span className="home-stat-icon"><UiIcon name="clock" /></span>
-                      <strong>{compactNumber(homeStats.activeListings || marketListings.length)}</strong>
-                      <small>Shpallje aktive</small>
-                    </div>
-                    <div className="home-stat-card purple">
-                      <span className="home-stat-icon"><UiIcon name="money" /></span>
-                      <strong>{compactMoney(homeStats.listedValue)}</strong>
-                      <small>Vlere e listuar</small>
-                    </div>
-                    <div className="home-stat-card blue">
-                      <span className="home-stat-icon"><UiIcon name="users" /></span>
-                      <strong>{compactNumber(homeStats.verifiedSellers)}</strong>
-                      <small>Shites te verifikuar</small>
-                    </div>
-                    <div className="home-stat-card orange">
-                      <span className="home-stat-icon"><UiIcon name="shield" /></span>
-                      <strong>24/7</strong>
-                      <small>AI Monitoring</small>
-                    </div>
+                  <div className="phone-preview" aria-hidden="true">
+                    <span />
+                    <div className="phone-card-image" />
+                    <div className="phone-row" />
+                    <div className="phone-grid"><i /><i /><i /><i /></div>
                   </div>
                 </div>
               </aside>
@@ -1646,7 +1654,7 @@ export default function MarketplaceApp({
                         <span className={`badge ${item.status === "SOLD" ? "" : "verified"}`}>{item.status ?? "ACTIVE"}</span>
                       </div>
                       <p>
-                        {item.category} - {item.location} - {item.year} - {money(item.price)}
+                        {item.category} &middot; {item.year} - {money(item.price)}
                       </p>
                     </div>
                     <div className="mine-actions">
@@ -1897,3 +1905,4 @@ export default function MarketplaceApp({
     </div>
   );
 }
+

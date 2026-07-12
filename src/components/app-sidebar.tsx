@@ -15,8 +15,12 @@ const navItems: Array<[View, string, string]> = [
   ["create", "Krijo shpallje", "plus-square"],
   ["mine", "Shpalljet e mia", "file"],
   ["messages", "Mesazhet", "mail"],
+  ["market", "Te preferuarat", "heart"],
+  ["messages", "Njoftimet", "bell"],
   ["auth", "Profili", "user"],
+  ["auth", "Cilesimet", "settings"],
   ["admin", "Admin", "settings"],
+  ["auth", "Dalja", "logout"],
 ];
 
 function SidebarIcon({ name }: { name: string }) {
@@ -49,8 +53,17 @@ function SidebarIcon({ name }: { name: string }) {
   if (name === "mail") {
     return <svg {...common}><rect x="3" y="5" width="18" height="14" rx="3" /><path d="m4 7 8 6 8-6" /></svg>;
   }
+  if (name === "heart") {
+    return <svg {...common}><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" /></svg>;
+  }
+  if (name === "bell") {
+    return <svg {...common}><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></svg>;
+  }
   if (name === "user") {
     return <svg {...common}><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="8" r="4" /></svg>;
+  }
+  if (name === "logout") {
+    return <svg {...common}><path d="M9 21H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>;
   }
   return <svg {...common}><circle cx="12" cy="12" r="3" /><path d="M12 2v3" /><path d="M12 19v3" /><path d="m4.93 4.93 2.12 2.12" /><path d="m16.95 16.95 2.12 2.12" /><path d="M2 12h3" /><path d="M19 12h3" /><path d="m4.93 19.07 2.12-2.12" /><path d="m16.95 7.05 2.12-2.12" /></svg>;
 }
@@ -62,6 +75,7 @@ export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar, isAd
   }
 
   const visibleNavItems = navItems.filter(([id]) => id !== "admin" || isAdmin);
+  const activeLabels = new Set(["Ballina", "Marketplace", "Krijo shpallje", "Shpalljet e mia", "Mesazhet", "Profili", "Admin"]);
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} aria-label="Navigimi kryesor">
@@ -82,8 +96,8 @@ export function AppSidebar({ view, go, viewHref, sidebarOpen, closeSidebar, isAd
       <nav className="nav-list">
         {visibleNavItems.map(([id, label, icon]) => (
           <a
-            key={id}
-            className={`nav-link ${view === id ? "active" : ""}`}
+            key={`${id}-${label}`}
+            className={`nav-link ${view === id && activeLabels.has(label) ? "active" : ""}`}
             href={viewHref(id)}
             onClick={(event) => {
               event.preventDefault();
