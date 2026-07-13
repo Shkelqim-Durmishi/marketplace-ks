@@ -408,6 +408,11 @@ function UiIcon({ name }: { name: string }) {
   if (name === "pin") return <svg {...common}><path d="M12 21s7-5.4 7-12a7 7 0 1 0-14 0c0 6.6 7 12 7 12Z" /><circle cx="12" cy="9" r="2" /></svg>;
   if (name === "clock") return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
   if (name === "users") return <svg {...common}><path d="M16 21a6 6 0 0 0-12 0" /><circle cx="10" cy="8" r="4" /><path d="M22 21a5 5 0 0 0-4-4.9" /><path d="M17 4.4a4 4 0 0 1 0 7.2" /></svg>;
+  if (name === "user") return <svg {...common}><circle cx="12" cy="8" r="4" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>;
+  if (name === "mail") return <svg {...common}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>;
+  if (name === "lock") return <svg {...common}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>;
+  if (name === "eye-off") return <svg {...common}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c7 0 10 8 10 8a16.7 16.7 0 0 1-3.1 4.4" /><path d="M6.1 6.1C3.3 8 2 12 2 12s3 8 10 8a10.7 10.7 0 0 0 5.9-1.7" /></svg>;
+  if (name === "swap") return <svg {...common}><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="M15 15l6 6" /><path d="M4 4l5 5" /></svg>;
   if (name === "bag") return <svg {...common}><path d="M6 8h12l-1 13H7z" /><path d="M9 8a3 3 0 0 1 6 0" /></svg>;
   if (name === "money") return <svg {...common}><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="12" cy="12" r="3" /><path d="M6 9v.01" /><path d="M18 15v.01" /></svg>;
   if (name === "more") return <svg {...common}><rect x="4" y="4" width="6" height="6" /><rect x="14" y="4" width="6" height="6" /><rect x="4" y="14" width="6" height="6" /><rect x="14" y="14" width="6" height="6" /></svg>;
@@ -1525,40 +1530,70 @@ export default function MarketplaceApp({
 
         {view === "auth" && (
           <section className="view active">
-            <div className="page-head">
-              <div>
-                <p className="eyebrow">Llogaria</p>
-                <h1>Kycu ose krijo llogari per te ruajtur shpallje dhe per te derguar mesazhe.</h1>
+            {user ? (
+              <div className="page-head">
+                <div>
+                  <p className="eyebrow">Llogaria</p>
+                  <h1>Profili yt ne Marketplace-ks.</h1>
+                </div>
               </div>
-            </div>
-            <div className={user ? "account-layout" : "auth-modern-layout simple"}>
+            ) : null}
+            <div className={user ? "account-layout" : "auth-modern-layout simple auth-showcase"}>
               {!user && authMessage ? <div className="auth-message">{authMessage}</div> : null}
               {!user ? (
                 <>
                   <section className="auth-hero-panel">
-                    <span className="badge verified">Verified marketplace</span>
-                    <h2>Llogari e sigurt per blerje dhe shitje.</h2>
-                    <p>
-                    Krijo profil, ruaj shpallje favorite, dergo mesazhe dhe menaxho shpalljet e tua ne nje vend.
-                    </p>
-                    <div className="auth-benefits">
-                      <span>Bank transfer flow</span>
-                    <span>Profil i verifikuar</span>
-                      <span>Fraud monitoring</span>
+                    <span className="auth-hero-icon"><UiIcon name="shield" /></span>
+                    <div className="auth-hero-copy">
+                      <h2>Llogari e sigurt per <span>blerje dhe shitje.</span></h2>
+                      <p>
+                        Krijo profil, ruaj shpallje favorite, dergo mesazhe dhe menaxho shpalljet e tua ne nje vend.
+                      </p>
+                    </div>
+                    <div className="auth-feature-list">
+                      <div className="auth-feature-row">
+                        <span><UiIcon name="swap" /></span>
+                        <div>
+                          <strong>Transaksione te sigurta</strong>
+                          <small>Sistem i avancuar verifikimi.</small>
+                        </div>
+                      </div>
+                      <div className="auth-feature-row">
+                        <span><UiIcon name="user" /></span>
+                        <div>
+                          <strong>Profil i besueshem</strong>
+                          <small>Nderto reputacion dhe beso me shume.</small>
+                        </div>
+                      </div>
+                      <div className="auth-feature-row">
+                        <span><UiIcon name="shield" /></span>
+                        <div>
+                          <strong>Monitorim i vazhdueshem</strong>
+                          <small>Sistemi yne punon 24/7 per sigurine tuaj.</small>
+                        </div>
+                      </div>
                     </div>
                   </section>
                   <section className="auth-card">
                     {authMode === "login" && (
                       <form className="auth-panel flat" method="post" action="/api/auth/login" onSubmit={login}>
-                        <h2>Mire se erdhe</h2>
+                        <span className="auth-form-icon"><UiIcon name="user" /></span>
+                        <h2>Mire se erdhe!</h2>
                         <p className="auth-subtitle">Kycu ne llogarine tende per te vazhduar.</p>
                         <label>
                           Email
-                          <input name="email" type="email" required placeholder="email@example.com" />
+                          <span className="auth-input-wrap">
+                            <UiIcon name="mail" />
+                            <input name="email" type="email" required placeholder="email@sample.com" />
+                          </span>
                         </label>
                         <label>
                           Fjalekalimi
-                          <input name="password" type="password" required placeholder="********" />
+                          <span className="auth-input-wrap">
+                            <UiIcon name="lock" />
+                            <input name="password" type="password" required placeholder="**************" />
+                            <span className="auth-input-eye"><UiIcon name="eye-off" /></span>
+                          </span>
                         </label>
                         <div className="form-meta">
                           <a href={authModeHref("forgot")} onClick={() => switchAuthMode("forgot")}>
@@ -1568,11 +1603,14 @@ export default function MarketplaceApp({
                         <button className="primary full" type="submit">
                           Kycu
                         </button>
+                        <div className="auth-divider"><span>ose vazhdo me</span></div>
                         <div className="social-row">
                           <button className="secondary" type="button" onClick={() => notify("Google OAuth do lidhet ne fazen tjeter.")}>
+                            <span className="social-mark google">G</span>
                             Google
                           </button>
                           <button className="secondary" type="button" onClick={() => notify("Facebook OAuth do lidhet ne fazen tjeter.")}>
+                            <span className="social-mark facebook">f</span>
                             Facebook
                           </button>
                         </div>
