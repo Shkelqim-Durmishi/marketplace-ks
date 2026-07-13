@@ -9,6 +9,7 @@ import { isFounderEmail } from "@/lib/admin";
 export type View = "home" | "market" | "favorites" | "auth" | "details" | "create" | "mine" | "messages" | "admin";
 
 type SortMode = "newest" | "price-low" | "price-high";
+type MarketViewMode = "grid" | "list";
 
 export type User = {
   id: string;
@@ -475,6 +476,7 @@ export default function MarketplaceApp({
   const [locationFilter, setLocationFilter] = useState("");
   const [maxPrice, setMaxPrice] = useState(150000);
   const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [marketViewMode, setMarketViewMode] = useState<MarketViewMode>("grid");
   const [authMode, setAuthMode] = useState<AuthMode>(getInitialAuthMode(initialResetToken, initialAuthMode));
   const [resetToken, setResetToken] = useState(initialResetToken ?? "");
   const [resetLink, setResetLink] = useState("");
@@ -1379,12 +1381,28 @@ export default function MarketplaceApp({
                       <option value="price-high">Cmimi me i larte</option>
                     </select>
                     <div className="view-toggle" aria-label="Pamja">
-                      <button className="active" type="button" aria-label="Grid">▦</button>
-                      <button type="button" aria-label="Liste">☰</button>
+                      <button
+                        className={marketViewMode === "grid" ? "active" : ""}
+                        type="button"
+                        aria-label="Grid"
+                        aria-pressed={marketViewMode === "grid"}
+                        onClick={() => setMarketViewMode("grid")}
+                      >
+                        ▦
+                      </button>
+                      <button
+                        className={marketViewMode === "list" ? "active" : ""}
+                        type="button"
+                        aria-label="Liste"
+                        aria-pressed={marketViewMode === "list"}
+                        onClick={() => setMarketViewMode("list")}
+                      >
+                        ☰
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div className="listing-grid">
+                <div className={`listing-grid ${marketViewMode === "list" ? "list-view" : ""}`}>
                   {visibleMarketListings.map((item) => (
                     <ListingCard
                       key={item.id}

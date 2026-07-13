@@ -1044,6 +1044,9 @@ input, select, textarea {
 
 .listing-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .listing-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.listing-grid.list-view {
+  grid-template-columns: 1fr;
+}
 .listing-card {
   padding: 0;
   overflow: hidden;
@@ -1055,6 +1058,27 @@ input, select, textarea {
   min-height: 162px;
   position: relative;
   overflow: hidden;
+}
+.listing-grid.list-view .listing-card {
+  grid-template-columns: minmax(240px, 34%) minmax(0, 1fr);
+  min-height: 218px;
+}
+.listing-grid.list-view .listing-media,
+.listing-grid.list-view .listing-image {
+  min-height: 218px;
+}
+.listing-grid.list-view .listing-body {
+  align-content: center;
+  padding: 20px 22px;
+}
+.listing-grid.list-view .listing-title {
+  font-size: 20px;
+}
+.listing-grid.list-view .listing-price {
+  font-size: 26px;
+}
+.listing-grid.list-view .listing-actions {
+  max-width: 240px;
 }
 .listing-image {
   display: block;
@@ -2249,6 +2273,25 @@ input, select, textarea {
   .hero h1 { font-size: 44px; }
   .page-head { display: grid; align-items: start; }
   .stats-grid, .category-grid, .listing-grid, .listing-grid.compact, .admin-grid, .usage-grid { grid-template-columns: 1fr; }
+  .listing-grid.list-view .listing-card {
+    grid-template-columns: 1fr;
+  }
+  .listing-grid.list-view .listing-media,
+  .listing-grid.list-view .listing-image {
+    min-height: 190px;
+  }
+  .listing-grid.list-view .listing-body {
+    padding: 14px;
+  }
+  .listing-grid.list-view .listing-title {
+    font-size: 15px;
+  }
+  .listing-grid.list-view .listing-price {
+    font-size: 20px;
+  }
+  .listing-grid.list-view .listing-actions {
+    max-width: none;
+  }
   .range-pair { grid-template-columns: 1fr; }
   .results-bar { align-items: start; flex-direction: column; }
   .bubble { max-width: 92%; }
