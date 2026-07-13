@@ -43,30 +43,15 @@ export function ListingCard({ item, userExists, money, viewHref, openListing, no
         </a>
         <span className="listing-price">{money(item.price)}</span>
         <p>
-          {item.category} <span aria-hidden="true">•</span> {item.year}
+          {item.category} <span aria-hidden="true">-</span> {item.year}
         </p>
         <small className="listing-location">
-          <span aria-hidden="true">⌖</span> {item.location}
+          <span aria-hidden="true">-</span> {item.location}
         </small>
         <div className="listing-actions">
           <a className="secondary small nav-action" href={viewHref("details", item.id)} onClick={() => openListing(item)}>
             Shiko detajet
           </a>
-          <button
-            className={`secondary small favorite-action ${isFavorite ? "active" : ""}`}
-            type="button"
-            aria-pressed={isFavorite}
-            onClick={() => {
-              if (!userExists) {
-                notify("Kycu per favorite.");
-                return;
-              }
-              toggleFavorite(item);
-            }}
-          >
-            <span aria-hidden="true">&hearts;</span>
-            {isFavorite ? "U ruajt" : "Ruaj"}
-          </button>
         </div>
         <p className="listing-ai">
           AI {item.score}%

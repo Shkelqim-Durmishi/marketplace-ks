@@ -8,6 +8,8 @@ import { isFounderEmail } from "@/lib/admin";
 
 export type View = "home" | "market" | "favorites" | "auth" | "details" | "create" | "mine" | "messages" | "admin";
 
+type SortMode = "newest" | "price-low" | "price-high";
+
 export type User = {
   id: string;
   name: string;
@@ -470,6 +472,9 @@ export default function MarketplaceApp({
   const [mainPhoto, setMainPhoto] = useState(initialListing.gallery[0]);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [maxPrice, setMaxPrice] = useState(150000);
+  const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [authMode, setAuthMode] = useState<AuthMode>(getInitialAuthMode(initialResetToken, initialAuthMode));
   const [resetToken, setResetToken] = useState(initialResetToken ?? "");
   const [resetLink, setResetLink] = useState("");
@@ -494,9 +499,15 @@ export default function MarketplaceApp({
   const filteredListings = useMemo(() => {
     return marketListings
       .filter((item) => (!category ? true : item.category === category))
+      .filter((item) => (!locationFilter ? true : item.location === locationFilter))
+      .filter((item) => (maxPrice >= 150000 ? true : item.price <= maxPrice))
       .filter((item) => `${item.title} ${item.location} ${item.category}`.toLowerCase().includes(query.toLowerCase()))
-      .sort((a, b) => b.score - a.score);
-  }, [category, marketListings, query]);
+      .sort((a, b) => {
+        if (sortMode === "price-high") return b.price - a.price;
+        if (sortMode === "price-low") return a.price - b.price;
+        return 0;
+      });
+  }, [category, locationFilter, marketListings, maxPrice, query, sortMode]);
 
   const favoriteListings = useMemo(() => {
     return marketListings.filter((item) => favoriteIds.has(item.id));
@@ -1306,6 +1317,9 @@ export default function MarketplaceApp({
                     onClick={() => {
                       setQuery("");
                       setCategory("");
+                      setLocationFilter("");
+                      setMaxPrice(150000);
+                      setSortMode("newest");
                     }}
                   >
                     Reset
@@ -1329,19 +1343,27 @@ export default function MarketplaceApp({
                 </label>
                 <label>
                   Lokacioni
-                  <select>
-                    <option>Te gjitha lokacionet</option>
-                    <option>Prishtine</option>
-                    <option>Prizren</option>
-                    <option>Peje</option>
-                    <option>Ferizaj</option>
-                    <option>Mitrovice</option>
+                  <select value={locationFilter} onChange={(event) => setLocationFilter(event.target.value)}>
+                    <option value="">Te gjitha lokacionet</option>
+                    <option value="Prishtine">Prishtine</option>
+                    <option value="Prizren">Prizren</option>
+                    <option value="Peje">Peje</option>
+                    <option value="Ferizaj">Ferizaj</option>
+                    <option value="Mitrovice">Mitrovice</option>
                   </select>
                 </label>
                 <label>
                   Cmimi
-                  <input className="filter-range" type="range" min="0" max="150000" defaultValue="150000" />
-                  <span className="range-labels"><small>0 €</small><small>150.000+ €</small></span>
+                  <input
+                    className="filter-range"
+                    type="range"
+                    min="0"
+                    max="150000"
+                    step="1000"
+                    value={maxPrice}
+                    onChange={(event) => setMaxPrice(Number(event.target.value))}
+                  />
+                  <span className="range-labels"><small>0 €</small><small>{maxPrice >= 150000 ? "150.000+ €" : money(maxPrice)}</small></span>
                 </label>
                 <button className="primary full" type="button" onClick={() => notify("Filtrat u aplikuan.")}>
                   Apliko filtrat
@@ -1351,10 +1373,10 @@ export default function MarketplaceApp({
                 <div className="results-bar">
                   <span>{visibleMarketListings.length.toLocaleString("de-DE")} rezultate</span>
                   <div className="market-sort-actions">
-                    <select aria-label="Renditja">
-                      <option>Me te rejat</option>
-                      <option>Cmimi me i ulet</option>
-                      <option>Cmimi me i larte</option>
+                    <select aria-label="Renditja" value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
+                      <option value="newest">Me te rejat</option>
+                      <option value="price-low">Cmimi me i ulet</option>
+                      <option value="price-high">Cmimi me i larte</option>
                     </select>
                     <div className="view-toggle" aria-label="Pamja">
                       <button className="active" type="button" aria-label="Grid">▦</button>

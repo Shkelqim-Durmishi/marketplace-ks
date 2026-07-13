@@ -1142,7 +1142,7 @@ input, select, textarea {
 .listing-ai {
   display: none;
 }
-.listing-actions { display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) minmax(92px, .8fr); margin-top: 4px; }
+.listing-actions { display: grid; gap: 8px; grid-template-columns: 1fr; margin-top: 4px; }
 .listing-actions .small {
   justify-content: center;
   min-height: 34px;
@@ -1180,6 +1180,10 @@ input, select, textarea {
   font-weight: 800;
 }
 .verified { background: color-mix(in srgb, var(--primary), transparent 84%); color: var(--primary-2); }
+.listing-verify.verified {
+  background: #14b8a6;
+  color: #fff;
+}
 
 .page-head {
   display: flex;
