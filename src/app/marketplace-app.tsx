@@ -1261,12 +1261,6 @@ export default function MarketplaceApp({
                       </div>
                     </div>
                   </div>
-                  <div className="phone-preview" aria-hidden="true">
-                    <span />
-                    <div className="phone-card-image" />
-                    <div className="phone-row" />
-                    <div className="phone-grid"><i /><i /><i /><i /></div>
-                  </div>
                 </div>
               </aside>
             </section>

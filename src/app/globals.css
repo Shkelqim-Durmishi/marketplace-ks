@@ -958,9 +958,9 @@ input, select, textarea {
 
 .platform-stats-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 98px;
+  grid-template-columns: 1fr;
   gap: 12px;
-  min-height: 250px;
+  min-height: auto;
   overflow: hidden;
   padding: 18px;
   position: relative;
@@ -995,59 +995,6 @@ input, select, textarea {
 .platform-stats-card .home-stat-card small {
   font-size: 9.5px;
   line-height: 1.2;
-}
-
-.phone-preview {
-  align-self: end;
-  background: #0b1118;
-  border: 5px solid #101820;
-  border-radius: 28px;
-  box-shadow: 0 22px 42px rgba(15, 23, 42, .26);
-  height: 198px;
-  justify-self: end;
-  padding: 11px 7px;
-  transform: rotate(-8deg) translate(3px, 10px);
-  width: 96px;
-}
-
-.phone-preview > span {
-  background: #0f172a;
-  border-radius: 999px;
-  display: block;
-  height: 6px;
-  margin: 0 auto 9px;
-  width: 34px;
-}
-
-.phone-card-image {
-  background:
-    linear-gradient(0deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .08)),
-    url("https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=400&q=80") center/cover;
-  border-radius: 10px;
-  height: 56px;
-}
-
-.phone-row {
-  background: #f8fafc;
-  border-radius: 999px;
-  height: 9px;
-  margin: 10px 0;
-}
-
-.phone-grid {
-  background: #fff;
-  border-radius: 16px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 7px;
-  padding: 8px;
-}
-
-.phone-grid i {
-  background: #f1f5f9;
-  border-radius: 10px;
-  display: block;
-  height: 27px;
 }
 
 .insight-panel, .filters, .editor-panel, .preview-panel, .chat-window, .threads, .risk-table {
@@ -1979,9 +1926,6 @@ input, select, textarea {
     grid-template-columns: 1fr;
     min-height: auto;
     padding: 16px;
-  }
-  .phone-preview {
-    display: none;
   }
   .auth-modern-layout,
   .auth-modern-layout.simple,
