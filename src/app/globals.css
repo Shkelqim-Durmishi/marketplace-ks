@@ -799,15 +799,20 @@ input, select, textarea {
 }
 
 .home-listing-image .save-pill {
-  background: rgba(255, 255, 255, .92);
+  align-items: center;
+  background: rgba(15, 23, 42, .18);
+  border: 1px solid rgba(255, 255, 255, .72);
+  backdrop-filter: blur(8px);
   color: transparent;
-  display: grid;
-  place-items: center;
-  min-width: 28px;
-  min-height: 28px;
+  display: inline-flex;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
   border-radius: 999px;
   padding: 0;
-  font-size: 19px;
+  font-size: 0;
   line-height: 1;
   position: relative;
   z-index: 1;
@@ -816,13 +821,16 @@ input, select, textarea {
 .home-listing-image .save-pill::before {
   content: "♡";
   color: #fff;
-  font-size: 22px;
+  display: block;
+  font-size: 21px;
   line-height: 1;
   text-shadow: 0 1px 8px rgba(15, 23, 42, .7);
+  transform: translateY(-1px);
 }
 
 .home-listing-image .save-pill.active {
   background: #fff;
+  border-color: #fff;
 }
 
 .home-listing-image .save-pill.active::before {
