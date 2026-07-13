@@ -14,25 +14,40 @@ type ListingCardProps = {
 export function ListingCard({ item, userExists, money, viewHref, openListing, notify, isFavorite, toggleFavorite }: ListingCardProps) {
   return (
     <article className="listing-card">
-      <a
-        className="listing-image listing-open"
-        href={viewHref("details", item.id)}
-        onClick={() => openListing(item)}
-        style={{ backgroundImage: `url('${item.image}')` }}
-        aria-label={`Shiko ${item.title}`}
-      />
+      <div className="listing-media">
+        <a
+          className="listing-image listing-open"
+          href={viewHref("details", item.id)}
+          onClick={() => openListing(item)}
+          style={{ backgroundImage: `url('${item.image}')` }}
+          aria-label={`Shiko ${item.title}`}
+        />
+        <span className={`listing-verify ${item.verified ? "verified" : ""}`}>{item.verified ? "Verifikuar" : "Pa verifikim"}</span>
+        <button
+          className={`listing-heart ${isFavorite ? "active" : ""}`}
+          type="button"
+          aria-pressed={isFavorite}
+          aria-label={isFavorite ? "Hiq nga te preferuarat" : "Ruaj te preferuarat"}
+          onClick={() => {
+            if (!userExists) {
+              notify("Kycu per favorite.");
+              return;
+            }
+            toggleFavorite(item);
+          }}
+        />
+      </div>
       <div className="listing-body">
-        <div className="console-head">
-          <span className={`badge ${item.verified ? "verified" : ""}`}>{item.verified ? "Verified" : "Unverified"}</span>
-          <span className="listing-meta">AI {item.score}%</span>
-        </div>
         <a className="listing-title" href={viewHref("details", item.id)} onClick={() => openListing(item)}>
           {item.title}
         </a>
         <span className="listing-price">{money(item.price)}</span>
         <p>
-          {item.category} - {item.location} - {item.year}
+          {item.category} <span aria-hidden="true">•</span> {item.year}
         </p>
+        <small className="listing-location">
+          <span aria-hidden="true">⌖</span> {item.location}
+        </small>
         <div className="listing-actions">
           <a className="secondary small nav-action" href={viewHref("details", item.id)} onClick={() => openListing(item)}>
             Shiko detajet
@@ -53,6 +68,9 @@ export function ListingCard({ item, userExists, money, viewHref, openListing, no
             {isFavorite ? "U ruajt" : "Ruaj"}
           </button>
         </div>
+        <p className="listing-ai">
+          AI {item.score}%
+        </p>
       </div>
     </article>
   );

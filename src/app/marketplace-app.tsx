@@ -1269,44 +1269,97 @@ export default function MarketplaceApp({
 
         {(view === "market" || view === "favorites") && (
           <section className="view active">
-            <div className="page-head">
-              <div>
-                <p className="eyebrow">{view === "favorites" ? "Te preferuarat" : "Marketplace"}</p>
-                <h1>{view === "favorites" ? "Shpalljet qe i ke ruajtur." : "Kerko, filtro dhe negocio ne menyre te sigurt."}</h1>
+            {view === "market" ? (
+              <section className="market-popular">
+                <div className="section-title compact">
+                  <h2>Kategorite popullore</h2>
+                </div>
+                <div className="market-category-grid">
+                  {homeCategoryCards.map((item) => (
+                    <button
+                      className={`market-category-card ${category === item.name ? "active" : ""}`}
+                      key={item.label}
+                      type="button"
+                      onClick={() => setCategory(item.name)}
+                    >
+                      <span><UiIcon name={item.icon} /></span>
+                      <strong>{item.label}</strong>
+                      <small>{compactNumber(homeStats.categoryCounts[item.name] ?? item.fallbackCount)} shpallje</small>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : (
+              <div className="page-head compact-head">
+                <div>
+                  <p className="eyebrow">Te preferuarat</p>
+                  <h1>Shpalljet qe i ke ruajtur.</h1>
+                </div>
               </div>
-              <a className="primary nav-action" href={viewHref("create")} onClick={() => go("create")}>
-                Krijo shpallje
-              </a>
-            </div>
+            )}
             <div className="market-layout">
               <form className="filters">
-                <h2>Filtra</h2>
+                <div className="filter-head">
+                  <h2>Filtro rezultatet</h2>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery("");
+                      setCategory("");
+                    }}
+                  >
+                    Reset
+                  </button>
+                </div>
                 <label>
                   Fjale kyce
-                  <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="BMW, banese, ekskavator" />
+                  <span className="filter-input-wrap">
+                    <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Kerko fjale kyce..." />
+                    <UiIcon name="search" />
+                  </span>
                 </label>
                 <label>
                   Kategori
                   <select value={category} onChange={(event) => setCategory(event.target.value)}>
-                    <option value="">Te gjitha</option>
+                    <option value="">Te gjitha kategorite</option>
                     {categories.map((item) => (
                       <option key={item}>{item}</option>
                     ))}
                   </select>
                 </label>
+                <label>
+                  Lokacioni
+                  <select>
+                    <option>Te gjitha lokacionet</option>
+                    <option>Prishtine</option>
+                    <option>Prizren</option>
+                    <option>Peje</option>
+                    <option>Ferizaj</option>
+                    <option>Mitrovice</option>
+                  </select>
+                </label>
+                <label>
+                  Cmimi
+                  <input className="filter-range" type="range" min="0" max="150000" defaultValue="150000" />
+                  <span className="range-labels"><small>0 €</small><small>150.000+ €</small></span>
+                </label>
                 <button className="primary full" type="button" onClick={() => notify("Filtrat u aplikuan.")}>
                   Apliko filtrat
                 </button>
               </form>
-              <div>
+              <div className="market-results">
                 <div className="results-bar">
-                  <span>{visibleMarketListings.length} rezultate</span>
-                  <div className="segmented">
-                    <button className="active" type="button">
-                      AI
-                    </button>
-                    <button type="button">Cmimi</button>
-                    <button type="button">Te reja</button>
+                  <span>{visibleMarketListings.length.toLocaleString("de-DE")} rezultate</span>
+                  <div className="market-sort-actions">
+                    <select aria-label="Renditja">
+                      <option>Me te rejat</option>
+                      <option>Cmimi me i ulet</option>
+                      <option>Cmimi me i larte</option>
+                    </select>
+                    <div className="view-toggle" aria-label="Pamja">
+                      <button className="active" type="button" aria-label="Grid">▦</button>
+                      <button type="button" aria-label="Liste">☰</button>
+                    </div>
                   </div>
                 </div>
                 <div className="listing-grid">
