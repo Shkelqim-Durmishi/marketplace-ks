@@ -777,12 +777,16 @@ input, select, textarea {
 
 .home-listing-image em,
 .home-listing-image .save-pill {
+  align-items: center;
   align-self: start;
   border: 0;
   border-radius: 5px;
+  display: inline-flex;
   font-size: 9px;
   font-style: normal;
   font-weight: 900;
+  justify-content: center;
+  line-height: 1;
   min-height: 21px;
   padding: 0 8px;
 }
@@ -1124,6 +1128,8 @@ input, select, textarea {
   display: inline-flex;
   width: fit-content;
   align-items: center;
+  justify-content: center;
+  line-height: 1;
   min-height: 26px;
   padding: 0 9px;
   border-radius: 999px;
